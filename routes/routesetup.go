@@ -20,5 +20,7 @@ func SetupRouter() *gin.Engine {
 		})
 	}))
 
+	r.StaticFS("/", http.Dir("game"))
+
 	return r
 }

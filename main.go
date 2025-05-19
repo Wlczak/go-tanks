@@ -41,4 +41,8 @@ func main() {
 
 	// Listen and Server in 0.0.0.0:8080
 	err = r.Run(":8080")
+
+	if err != nil {
+		zap.Fatal(err.Error())
+	}
 }
