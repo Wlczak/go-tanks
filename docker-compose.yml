@@ -5,10 +5,6 @@ services:
             - ./:/app
         working_dir: /app
         restart: always
-        user: "${UID}:${GID}"
-        environment:
-            - UID=${UID}
-            - GID=${GID}
         ports:
             - "9460:8080"
         command: go run .
