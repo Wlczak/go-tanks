@@ -1,3 +1,5 @@
 
 .env
 logger/logs/app.log
+/game/node_modules
+/game/dist
