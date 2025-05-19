@@ -1,0 +1,9 @@
+services:
+    tanks-server:
+        image: golang:1.24.2-alpine3.21
+        volumes:
+            - ./:/app
+        working_dir: /app
+        ports:
+            - "9460:8080"
+        command: go run .
