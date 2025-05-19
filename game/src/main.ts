@@ -1,3 +1,8 @@
+import { Controlls } from "./controlls.js";
+import { Player } from "./objects/player.js";
+
+document.addEventListener("DOMContentLoaded", startGame);
+
 function startGame() {
     const canvas = document.getElementById("test") as HTMLCanvasElement;
 
@@ -23,8 +28,14 @@ class Game {
     private accumulator = 0;
     private readonly timestep = 1000 / 60;
 
+    private Player: Player;
+    private Controlls: Controlls;
+
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
+        this.Player = new Player("1", "Player 1", "red", 200, 200);
+        this.Controlls = new Controlls();
+
         requestAnimationFrame(this.loop.bind(this));
     }
 
@@ -43,10 +54,23 @@ class Game {
     }
 
     private update() {
-        console.log("update");
+        if (this.Controlls.up) {
+            this.Player.y -= 1;
+        }
+        if (this.Controlls.down) {
+            this.Player.y += 1;
+        }
+        if (this.Controlls.left) {
+            this.Player.x -= 1;
+        }
+        if (this.Controlls.right) {
+            this.Player.x += 1;
+        }
     }
 
     private render() {
-        console.log("render");
+        this.ctx.reset();
+        this.ctx.fillStyle = this.Player.color;
+        this.ctx.fillRect(this.Player.x, this.Player.y, 50, 50);
     }
 }
