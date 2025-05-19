@@ -4,6 +4,7 @@ services:
         volumes:
             - ./:/app
         working_dir: /app
+        restart: always
         ports:
             - "9460:8080"
         command: go run .
