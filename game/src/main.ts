@@ -33,7 +33,7 @@ class Game {
 
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
-        this.Player = new Player("1", "Player 1", "red", 200, 200);
+        this.Player = new Player("1", "Player 1", "red", 200, 200, 0);
         this.Controlls = new Controlls();
 
         requestAnimationFrame(this.loop.bind(this));
@@ -54,23 +54,34 @@ class Game {
     }
 
     private update() {
+        var speed = 15;
         if (this.Controlls.up) {
-            this.Player.y -= 1;
+            this.Player.y -= Math.cos((this.Player.rotation / 180) * Math.PI) * speed;
+            this.Player.x += Math.sin((this.Player.rotation / 180) * Math.PI) * speed;
         }
         if (this.Controlls.down) {
-            this.Player.y += 1;
+            this.Player.y += Math.cos((this.Player.rotation / 180) * Math.PI) * speed;
+            this.Player.x -= Math.sin((this.Player.rotation / 180) * Math.PI) * speed;
         }
         if (this.Controlls.left) {
-            this.Player.x -= 1;
+            this.Player.rotation -= speed / 2;
         }
         if (this.Controlls.right) {
-            this.Player.x += 1;
+            this.Player.rotation += speed / 2;
         }
     }
 
     private render() {
         this.ctx.reset();
+
         this.ctx.fillStyle = this.Player.color;
-        this.ctx.fillRect(this.Player.x, this.Player.y, 50, 50);
+        var relX = this.Player.x + this.Player.width / 2;
+        var relY = this.Player.y + this.Player.height / 2;
+
+        this.ctx.translate(relX, relY);
+        this.ctx.rotate((this.Player.rotation * Math.PI) / 180);
+        this.ctx.translate(-relX, -relY);
+
+        this.ctx.fillRect(this.Player.x, this.Player.y, this.Player.width, this.Player.height);
     }
 }
