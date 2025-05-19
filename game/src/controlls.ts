@@ -14,13 +14,13 @@ export class Controlls {
         document.addEventListener("keyup", (event) => {
             if (event.key === "ArrowUp") {
                 this.up = false;
-                console.log("up off");
+                if (this.debug) console.log("up off");
             }
         });
         document.addEventListener("keydown", (event) => {
             if (event.key === "ArrowUp") {
                 this.up = true;
-                console.log("up on");
+                if (this.debug) console.log("up on");
             }
         });
 
@@ -28,13 +28,13 @@ export class Controlls {
         document.addEventListener("keyup", (event) => {
             if (event.key === "ArrowDown") {
                 this.down = false;
-                console.log("down off");
+                if (this.debug) console.log("down off");
             }
         });
         document.addEventListener("keydown", (event) => {
             if (event.key === "ArrowDown") {
                 this.down = true;
-                console.log("down on");
+                if (this.debug) console.log("down on");
             }
         });
 
@@ -42,13 +42,13 @@ export class Controlls {
         document.addEventListener("keyup", (event) => {
             if (event.key === "ArrowLeft") {
                 this.left = false;
-                console.log("left off");
+                if (this.debug) console.log("left off");
             }
         });
         document.addEventListener("keydown", (event) => {
             if (event.key === "ArrowLeft") {
                 this.left = true;
-                console.log("left on");
+                if (this.debug) console.log("left on");
             }
         });
 
@@ -56,13 +56,13 @@ export class Controlls {
         document.addEventListener("keyup", (event) => {
             if (event.key === "ArrowRight") {
                 this.right = false;
-                console.log("right off");
+                if (this.debug) console.log("right off");
             }
         });
         document.addEventListener("keydown", (event) => {
             if (event.key === "ArrowRight") {
                 this.right = true;
-                console.log("right on");
+                if (this.debug) console.log("right on");
             }
         });
     }
