@@ -24,6 +24,7 @@ function startGame() {
 
 class Game {
     private ctx: CanvasRenderingContext2D;
+    private buffer: CanvasRenderingContext2D;
     private lastUpdate = performance.now();
     private accumulator = 0;
     private readonly timestep = 1000 / 60;
@@ -33,6 +34,10 @@ class Game {
 
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
+        const buffer = document.createElement("canvas") as HTMLCanvasElement;
+        buffer.width = 800;
+        buffer.height = 600;
+        this.buffer = buffer.getContext("2d") as CanvasRenderingContext2D;
         this.Player = new Player("1", "Player 1", "red", 200, 200, 0);
         this.Controlls = new Controlls();
 
@@ -54,7 +59,7 @@ class Game {
     }
 
     private update() {
-        var speed = 15;
+        var speed = 8;
         if (this.Controlls.up) {
             this.Player.y -= Math.cos((this.Player.rotation / 180) * Math.PI) * speed;
             this.Player.x += Math.sin((this.Player.rotation / 180) * Math.PI) * speed;
@@ -64,24 +69,33 @@ class Game {
             this.Player.x -= Math.sin((this.Player.rotation / 180) * Math.PI) * speed;
         }
         if (this.Controlls.left) {
-            this.Player.rotation -= speed / 2;
+            this.Player.rotation -= speed;
         }
         if (this.Controlls.right) {
-            this.Player.rotation += speed / 2;
+            this.Player.rotation += speed;
         }
     }
 
     private render() {
+        var img = new Image();
+        img.src = "player.png";
+
+        var relX = this.Player.x + img.width / 2;
+        var relY = this.Player.y + img.height / 2;
+
+        this.buffer.reset();
+
+        this.buffer.fillStyle = "#E4DFDA";
+
+        this.buffer.fillRect(0, 0, 800, 600);
+        this.buffer.translate(relX, relY);
+        this.buffer.rotate((this.Player.rotation * Math.PI) / 180);
+        this.buffer.translate(-relX, -relY);
+
+        this.buffer.drawImage(img, this.Player.x, this.Player.y);
+        // this.buffer.fillRect(this.Player.x, this.Player.y, this.Player.width, this.Player.height);
+
         this.ctx.reset();
-
-        this.ctx.fillStyle = this.Player.color;
-        var relX = this.Player.x + this.Player.width / 2;
-        var relY = this.Player.y + this.Player.height / 2;
-
-        this.ctx.translate(relX, relY);
-        this.ctx.rotate((this.Player.rotation * Math.PI) / 180);
-        this.ctx.translate(-relX, -relY);
-
-        this.ctx.fillRect(this.Player.x, this.Player.y, this.Player.width, this.Player.height);
+        this.ctx.drawImage(this.buffer.canvas, 0, 0);
     }
 }
