@@ -1,4 +1,5 @@
 import { Controlls } from "../controlls.js";
+import { ObjectContext } from "../object_context.js";
 
 export class Player {
     public id: string;
@@ -10,17 +11,30 @@ export class Player {
     public width: number = 50;
     public height: number = 50;
     public isAlive: boolean = true;
+    public isPlayable: boolean = true;
+
+    private ObjectCTX: ObjectContext;
 
     private img: HTMLImageElement;
     private Controlls: Controlls;
 
-    constructor(id: string, name: string, color: string, x: number, y: number, rotation: number) {
+    constructor(
+        id: string,
+        name: string,
+        color: string,
+        x: number,
+        y: number,
+        rotation: number,
+        ctx: ObjectContext
+    ) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.x = x;
         this.y = y;
         this.rotation = rotation;
+
+        this.ObjectCTX = ctx;
 
         this.Controlls = new Controlls();
         this.img = new Image();
@@ -37,21 +51,23 @@ export class Player {
     }
 
     public update() {
-        var speed = 4;
-        var rotSpeed = 5.5;
-        if (this.Controlls.up) {
-            this.y -= Math.cos((this.rotation / 180) * Math.PI) * speed;
-            this.x += Math.sin((this.rotation / 180) * Math.PI) * speed;
-        }
-        if (this.Controlls.down) {
-            this.y += Math.cos((this.rotation / 180) * Math.PI) * speed;
-            this.x -= Math.sin((this.rotation / 180) * Math.PI) * speed;
-        }
-        if (this.Controlls.left) {
-            this.rotation -= rotSpeed;
-        }
-        if (this.Controlls.right) {
-            this.rotation += rotSpeed;
+        if (this.isPlayable) {
+            var speed = 4;
+            var rotSpeed = 5.5;
+            if (this.Controlls.up) {
+                this.y -= Math.cos((this.rotation / 180) * Math.PI) * speed;
+                this.x += Math.sin((this.rotation / 180) * Math.PI) * speed;
+            }
+            if (this.Controlls.down) {
+                this.y += Math.cos((this.rotation / 180) * Math.PI) * speed;
+                this.x -= Math.sin((this.rotation / 180) * Math.PI) * speed;
+            }
+            if (this.Controlls.left) {
+                this.rotation -= rotSpeed;
+            }
+            if (this.Controlls.right) {
+                this.rotation += rotSpeed;
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 import { Controlls } from "./controlls.js";
 import { Player } from "./objects/player.js";
+import { ObjectContext } from "./object_context.js";
 
 document.addEventListener("DOMContentLoaded", startGame);
 
@@ -33,18 +34,20 @@ class Game {
     private readonly fps = 60;
     private readonly timestep = 1000 / this.fps;
 
-    private Players: Player[] = [];
     private Controlls: Controlls;
+    private ObjectCTX: ObjectContext = new ObjectContext();
 
     constructor(ctxF: CanvasRenderingContext2D, ctxB: CanvasRenderingContext2D) {
         this.ctxF = ctxF;
         this.ctxB = ctxB;
+
         const buffer = document.createElement("canvas") as HTMLCanvasElement;
         buffer.width = 800;
         buffer.height = 600;
         this.buffer = buffer.getContext("2d") as CanvasRenderingContext2D;
-        this.Players[0] = new Player("1", "Player 1", "red", 200, 200, 0);
-        this.Players[1] = new Player("1s", "Player 12", "red", 100, 100, 180);
+
+        this.ObjectCTX.registerPlayer(100, 100, "1", "Player 1", true);
+
         this.Controlls = new Controlls();
 
         requestAnimationFrame(this.loop.bind(this));
@@ -66,7 +69,7 @@ class Game {
 
     private update() {
         // update players
-        this.Players.forEach((player) => {
+        this.ObjectCTX.Players.forEach((player) => {
             player.update();
         });
     }
@@ -77,7 +80,7 @@ class Game {
         this.buffer.fillRect(0, 0, 800, 600);
 
         // render players
-        this.Players.forEach((player) => {
+        this.ObjectCTX.Players.forEach((player) => {
             player.render(this.buffer);
         });
         this.ctxF.reset();
