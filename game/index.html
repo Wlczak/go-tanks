@@ -10,9 +10,14 @@
 
 <body>
     <div style="display: flex; justify-content: center; align-items: center;">
-        <canvas id="test" width="800" height="600" style="border:1px solid black; max-width:100%; height:auto;">
-        </canvas>
+        <div style="position: relative; width: 800px; height: 600px;">
+            <canvas id="background" width="800" height="600"
+                style="position: absolute; top: 0; left: 0; z-index: 0; max-width: 100%; height: auto;"></canvas>
+            <canvas id="foreground" width="800" height="600"
+                style="position: absolute; top: 0; left: 0; z-index: 1; border: 1px solid black; max-width: 100%; height: auto;"></canvas>
+        </div>
     </div>
+
 </body>
 
 </html>
