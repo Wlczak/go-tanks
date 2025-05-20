@@ -1,8 +1,10 @@
 import { Controlls } from "../controlls.js";
+import { Object } from "../object.js";
 import { ObjectContext } from "../object_context.js";
 
-export class Player {
+export class Player implements Object {
     public id: string;
+    public objectId: number;
     public name: string;
     public color: string;
     public x: number;
@@ -13,7 +15,8 @@ export class Player {
     public isAlive: boolean = true;
     public isPlayable: boolean = true;
 
-    private ObjectCTX: ObjectContext;
+    public ObjectCTX: ObjectContext;
+    public collisionRadius: number;
 
     private img: HTMLImageElement;
     private Controlls: Controlls;
@@ -25,7 +28,9 @@ export class Player {
         x: number,
         y: number,
         rotation: number,
-        ctx: ObjectContext
+        ctx: ObjectContext,
+        collisionRadius: number,
+        objectId: number
     ) {
         this.id = id;
         this.name = name;
@@ -33,6 +38,9 @@ export class Player {
         this.x = x;
         this.y = y;
         this.rotation = rotation;
+
+        this.objectId = objectId;
+        this.collisionRadius = collisionRadius;
 
         this.ObjectCTX = ctx;
 
@@ -55,8 +63,10 @@ export class Player {
             var speed = 4;
             var rotSpeed = 5.5;
             if (this.Controlls.up) {
-                this.y -= Math.cos((this.rotation / 180) * Math.PI) * speed;
-                this.x += Math.sin((this.rotation / 180) * Math.PI) * speed;
+                const intendedY = this.y - Math.cos((this.rotation / 180) * Math.PI) * speed;
+                const intendedX = this.x + Math.sin((this.rotation / 180) * Math.PI) * speed;
+
+                this.ObjectCTX.checkCollisions(intendedX, intendedY);
             }
             if (this.Controlls.down) {
                 this.y += Math.cos((this.rotation / 180) * Math.PI) * speed;
