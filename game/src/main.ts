@@ -73,11 +73,14 @@ class Game {
 
     private render() {
         // render foreground
+        this.buffer.fillStyle = "#E4DFDA";
+        this.buffer.fillRect(0, 0, 800, 600);
+
         // render players
         this.Players.forEach((player) => {
-            player.render(this.ctxF);
+            player.render(this.buffer);
         });
-        //this.ctxF.reset();
-        //this.ctxF.drawImage(this.buffer.canvas, 0, 0);
+        this.ctxF.reset();
+        this.ctxF.drawImage(this.buffer.canvas, 0, 0);
     }
 }

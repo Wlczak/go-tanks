@@ -11,6 +11,7 @@ export class Player {
     public height: number = 50;
     public isAlive: boolean = true;
 
+    private img: HTMLImageElement;
     private Controlls: Controlls;
 
     constructor(id: string, name: string, color: string, x: number, y: number, rotation: number) {
@@ -22,6 +23,8 @@ export class Player {
         this.rotation = rotation;
 
         this.Controlls = new Controlls();
+        this.img = new Image();
+        this.img.src = "player.png";
     }
 
     public set(id: string, name: string, color: string, x: number, y: number, rotation: number) {
@@ -53,20 +56,15 @@ export class Player {
     }
 
     public render(buffer: CanvasRenderingContext2D) {
-        var img = new Image();
+        var relX = this.x + this.img.width / 2;
+        var relY = this.y + this.img.height / 2;
 
-        img.src = "player.png";
-
-        var relX = this.x + img.width / 2;
-        var relY = this.y + img.height / 2;
-
-        buffer.fillStyle = "#E4DFDA";
-        buffer.fillRect(0, 0, 800, 600);
+        buffer.save();
         buffer.translate(relX, relY);
         buffer.rotate((this.rotation * Math.PI) / 180);
         buffer.translate(-relX, -relY);
-        buffer.drawImage(img, this.x, this.y);
-        buffer.save();
+        buffer.drawImage(this.img, this.x, this.y);
+        buffer.restore();
 
         //buffer.fillRect(this.x, this.y, this.width, this.height);
     }
