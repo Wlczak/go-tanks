@@ -33,8 +33,8 @@ export class ObjectContext {
 
         for (const player of this.Players) {
             if (player.objectId !== objectId) {
-                const dx = intendedX - player.x;
-                const dy = intendedY - player.y;
+                const dx = intendedX - player.x - player.width / 2;
+                const dy = intendedY - player.y - player.height / 2;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 if (distance < radius + player.collisionRadius) {
                     return false;

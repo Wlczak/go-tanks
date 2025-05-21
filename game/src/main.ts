@@ -51,7 +51,7 @@ class Game {
         this.buffer = buffer.getContext("2d") as CanvasRenderingContext2D;
 
         this.ObjectCTX.registerPlayer(100, 100, "1", "Player 1", true);
-        this.ObjectCTX.registerPlayer(300, 300, "2", "Player 2", true);
+        this.ObjectCTX.registerPlayer(300, 300, "2", "Player 2", false);
 
         this.Controlls = new Controlls();
 

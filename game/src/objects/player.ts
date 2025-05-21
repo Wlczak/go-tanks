@@ -79,8 +79,20 @@ export class Player implements Object {
                 }
             }
             if (this.Controlls.down) {
-                this.y += Math.cos((this.rotation / 180) * Math.PI) * speed;
-                this.x -= Math.sin((this.rotation / 180) * Math.PI) * speed;
+                const intendedY = this.y + Math.cos((this.rotation / 180) * Math.PI) * speed;
+                const intendedX = this.x - Math.sin((this.rotation / 180) * Math.PI) * speed;
+
+                if (
+                    this.ObjectCTX.checkCollisions(
+                        intendedX + this.width / 2, // give coordinates at the center of the object
+                        intendedY + this.height / 2,
+                        this.collisionRadius,
+                        this.objectId
+                    )
+                ) {
+                    this.y = intendedY;
+                    this.x = intendedX;
+                }
             }
             if (this.Controlls.left) {
                 this.rotation -= rotSpeed;
@@ -105,11 +117,11 @@ export class Player implements Object {
         buffer.restore();
 
         // collider circle
-        buffer.strokeStyle = "black";
-        buffer.fillStyle = "black";
-        buffer.beginPath();
-        buffer.arc(this.x + this.width / 2, this.y + this.height / 2, this.collisionRadius, 0, 2 * Math.PI);
-        buffer.stroke();
+        // buffer.strokeStyle = "black";
+        // buffer.fillStyle = "black";
+        // buffer.beginPath();
+        // buffer.arc(this.x + this.width / 2, this.y + this.height / 2, this.collisionRadius, 0, 2 * Math.PI);
+        // buffer.stroke();
 
         // buffer.fillRect(this.x, this.y, this.width, this.height);
 
