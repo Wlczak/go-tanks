@@ -10,8 +10,8 @@ export class Player implements Object {
     public x: number;
     public y: number;
     public rotation: number;
-    public width: number = 50;
-    public height: number = 50;
+    public width: number = 36;
+    public height: number = 53;
     public isAlive: boolean = true;
     public isPlayable: boolean = true;
 
@@ -66,7 +66,17 @@ export class Player implements Object {
                 const intendedY = this.y - Math.cos((this.rotation / 180) * Math.PI) * speed;
                 const intendedX = this.x + Math.sin((this.rotation / 180) * Math.PI) * speed;
 
-                this.ObjectCTX.checkCollisions(intendedX, intendedY);
+                if (
+                    this.ObjectCTX.checkCollisions(
+                        intendedX + this.width / 2, // give coordinates at the center of the object
+                        intendedY + this.height / 2,
+                        this.collisionRadius,
+                        this.objectId
+                    )
+                ) {
+                    this.y = intendedY;
+                    this.x = intendedX;
+                }
             }
             if (this.Controlls.down) {
                 this.y += Math.cos((this.rotation / 180) * Math.PI) * speed;
@@ -82,16 +92,27 @@ export class Player implements Object {
     }
 
     public render(buffer: CanvasRenderingContext2D) {
-        var relX = this.x + this.img.width / 2;
-        var relY = this.y + this.img.height / 2;
+        var relX = this.x + this.width / 2;
+        var relY = this.y + this.height / 2;
 
         buffer.save();
         buffer.translate(relX, relY);
         buffer.rotate((this.rotation * Math.PI) / 180);
+        buffer.transform(this.width / this.img.width, 0, 0, this.height / this.img.height, 0, 0);
         buffer.translate(-relX, -relY);
-        buffer.drawImage(this.img, this.x, this.y);
+        buffer.drawImage(this.img, relX - this.img.width / 2, relY - this.img.height / 2);
+
         buffer.restore();
 
-        //buffer.fillRect(this.x, this.y, this.width, this.height);
+        // collider circle
+        buffer.strokeStyle = "black";
+        buffer.fillStyle = "black";
+        buffer.beginPath();
+        buffer.arc(this.x + this.width / 2, this.y + this.height / 2, this.collisionRadius, 0, 2 * Math.PI);
+        buffer.stroke();
+
+        // buffer.fillRect(this.x, this.y, this.width, this.height);
+
+        buffer.restore();
     }
 }

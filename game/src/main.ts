@@ -35,11 +35,15 @@ class Game {
     private readonly timestep = 1000 / this.fps;
 
     private Controlls: Controlls;
-    private ObjectCTX: ObjectContext = new ObjectContext();
+    private ObjectCTX: ObjectContext;
 
     constructor(ctxF: CanvasRenderingContext2D, ctxB: CanvasRenderingContext2D) {
         this.ctxF = ctxF;
         this.ctxB = ctxB;
+
+        this.ObjectCTX = new ObjectContext(ctxF.canvas.width, ctxF.canvas.height);
+
+        console.log(ctxF.canvas.width, ctxF.canvas.height);
 
         const buffer = document.createElement("canvas") as HTMLCanvasElement;
         buffer.width = 800;
@@ -47,6 +51,7 @@ class Game {
         this.buffer = buffer.getContext("2d") as CanvasRenderingContext2D;
 
         this.ObjectCTX.registerPlayer(100, 100, "1", "Player 1", true);
+        this.ObjectCTX.registerPlayer(300, 300, "2", "Player 2", true);
 
         this.Controlls = new Controlls();
 
