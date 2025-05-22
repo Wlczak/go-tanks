@@ -50,11 +50,15 @@ class Game {
         buffer.height = 600;
         this.buffer = buffer.getContext("2d") as CanvasRenderingContext2D;
 
-        this.ObjectCTX.registerPlayer(100, 100, "1", "Player 1", true);
+        this.ObjectCTX.registerPlayer(500, 500, "1", "Player 1", true);
         this.ObjectCTX.registerPlayer(300, 300, "2", "Player 2", false);
+
+        this.ObjectCTX.registerWall(50, 50, 400, 50);
+        this.ObjectCTX.registerWall(50, 120, 400, 120);
 
         this.Controlls = new Controlls();
 
+        this.renderBackground();
         requestAnimationFrame(this.loop.bind(this));
     }
 
@@ -80,9 +84,8 @@ class Game {
     }
 
     private render() {
+        this.buffer.reset();
         // render foreground
-        this.buffer.fillStyle = "#E4DFDA";
-        this.buffer.fillRect(0, 0, 800, 600);
 
         // render players
         this.ObjectCTX.Players.forEach((player) => {
@@ -90,5 +93,19 @@ class Game {
         });
         this.ctxF.reset();
         this.ctxF.drawImage(this.buffer.canvas, 0, 0);
+    }
+
+    private renderBackground() {
+        this.buffer.reset();
+
+        this.buffer.fillStyle = "#E4DFDA";
+        this.buffer.fillRect(0, 0, this.ctxB.canvas.width, this.ctxB.canvas.height);
+
+        this.ObjectCTX.Walls.forEach((wall) => {
+            wall.render(this.buffer);
+        });
+
+        this.ctxB.reset();
+        this.ctxB.drawImage(this.buffer.canvas, 0, 0);
     }
 }

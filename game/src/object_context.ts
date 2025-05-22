@@ -1,7 +1,9 @@
 import { Player } from "./objects/player.js";
+import { Wall } from "./objects/wall.js";
 
 export class ObjectContext {
     public Players: Player[] = [];
+    public Walls: Wall[] = [];
 
     private borderX: number;
     private borderY: number;
@@ -19,6 +21,11 @@ export class ObjectContext {
         player.isPlayable = isPlayable;
 
         this.Players.push(player);
+    }
+
+    public registerWall(startX: number, startY: number, endX: number, endY: number) {
+        const wall = new Wall(startX, startY, endX, endY, this.objectIdCounter++, this);
+        this.Walls.push(wall);
     }
 
     public checkCollisions(intendedX: number, intendedY: number, radius: number, objectId: number): boolean {
@@ -39,6 +46,30 @@ export class ObjectContext {
                 if (distance < radius + player.collisionRadius) {
                     return false;
                 }
+            }
+        }
+        for (const wall of this.Walls) {
+            // no clue what this does, written by chatGPT
+            const A = { x: wall.startX, y: wall.startY };
+            const B = { x: wall.endX, y: wall.endY };
+            const C = { x: intendedX, y: intendedY };
+
+            const ABx = B.x - A.x;
+            const ABy = B.y - A.y;
+            const ACx = C.x - A.x;
+            const ACy = C.y - A.y;
+
+            const ab2 = ABx * ABx + ABy * ABy;
+            const t = Math.max(0, Math.min(1, (ACx * ABx + ACy * ABy) / ab2));
+
+            const Px = A.x + ABx * t;
+            const Py = A.y + ABy * t;
+
+            const dx = C.x - Px;
+            const dy = C.y - Py;
+
+            if (dx * dx + dy * dy <= radius * radius) {
+                return false;
             }
         }
         return true;
