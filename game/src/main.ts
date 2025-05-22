@@ -74,28 +74,36 @@ class Game {
         const WallCells: WallCell[][] = [];
         var cellCounter = 0;
 
-        const maxXIndex = this.ctxF.canvas.width / blockWidth;
-        const maxYIndex = this.ctxF.canvas.height / blockHeight;
+        const maxXIndex = this.ctxF.canvas.width / blockWidth - 1;
+        const maxYIndex = this.ctxF.canvas.height / blockHeight - 1;
 
         console.log("width", maxXIndex);
         console.log("height", maxYIndex);
 
-        for (var i = 0; i < maxXIndex; i++) {
+        for (var i = 0; i <= maxXIndex; i++) {
             WallCells[i] = [];
-            for (var j = 0; j < maxYIndex; j++) {
+            for (var j = 0; j <= maxYIndex; j++) {
                 WallCells[i][j] = new WallCell(i * 100, j * 100);
             }
         }
+
+        console.log(WallCells);
+
         var prevCoords: { x: number; y: number }[] = [];
         var coords = { x: 0, y: 0 };
         var safetyCounter = 0;
 
         while (cellCounter < WallCells.length * WallCells[0].length) {
             coords = generateCell(coords.x, coords.y);
+            if (coords.x !== -1) {
+                prevCoords.push(coords);
+            }
             if (coords.x === -1 && prevCoords.length > 0) {
                 coords = prevCoords.pop() as { x: number; y: number };
+            } else if (coords.x === -1 && prevCoords.length == 0) {
+                console.log("stopped");
+                break;
             }
-            prevCoords.push(coords);
             safetyCounter++;
             if (safetyCounter > 1000) {
                 break;
@@ -134,15 +142,48 @@ class Game {
         function generateCell(xIndex: number, yIndex: number): { x: number; y: number } {
             var rand = Math.random();
             // runs two times to always select something
-            for (var i = 0; i < 2; i++) {
-                if (WallCells[xIndex][yIndex].hasBeenVisited) {
+            if (WallCells[xIndex][yIndex].hasBeenVisited) {
+                var exit = true;
+                // right
+                if (xIndex < maxXIndex) {
+                    if (WallCells[xIndex + 1][yIndex].hasBeenVisited === false) {
+                        exit = false;
+                    }
+                }
+                // bottom
+                if (yIndex < maxYIndex) {
+                    if (WallCells[xIndex][yIndex + 1].hasBeenVisited === false) {
+                        exit = false;
+                    }
+                }
+                // top
+                if (yIndex > 0) {
+                    if (WallCells[xIndex][yIndex - 1].hasBeenVisited === false) {
+                        exit = false;
+                    }
+                }
+                // left
+                if (xIndex > 0) {
+                    if (WallCells[xIndex - 1][yIndex].hasBeenVisited === false) {
+                        exit = false;
+                    }
+                }
+
+                if (exit) {
+                    console.log("exit", xIndex, yIndex);
                     return { x: -1, y: -1 };
                 }
+            }
+            for (var i = 0; i < 2; i++) {
+                console.log("run");
                 WallCells[xIndex][yIndex].hasBeenVisited = true;
                 // top
                 if (rand <= 0.25) {
-                    if (xIndex > 0) {
-                        if (WallCells[xIndex - 1][yIndex].hasBeenVisited === false) {
+                    if (yIndex > 0) {
+                        if (WallCells[xIndex][yIndex - 1].hasBeenVisited === false) {
+                            console.log(WallCells[xIndex][yIndex]);
+                            console.log(WallCells[xIndex][yIndex - 1]);
+
                             cellCounter++;
                             WallCells[xIndex][yIndex - 1].hasBottomWall = false;
                             WallCells[xIndex][yIndex].hasTopWall = false;
@@ -152,8 +193,11 @@ class Game {
                 }
                 // left
                 if (rand <= 0.5) {
-                    if (yIndex > 0) {
-                        if (WallCells[xIndex][yIndex - 1].hasBeenVisited === false) {
+                    if (xIndex > 0) {
+                        if (WallCells[xIndex - 1][yIndex].hasBeenVisited === false) {
+                            console.log(WallCells[xIndex][yIndex]);
+                            console.log(WallCells[xIndex - 1][yIndex]);
+
                             cellCounter++;
                             WallCells[xIndex - 1][yIndex].hasRightWall = false;
                             WallCells[xIndex][yIndex].hasLeftWall = false;
@@ -163,8 +207,11 @@ class Game {
                 }
                 // bottom
                 if (rand <= 0.75) {
-                    if (xIndex < maxXIndex - 1) {
-                        if (WallCells[xIndex + 1][yIndex].hasBeenVisited === false) {
+                    if (yIndex < maxYIndex) {
+                        if (WallCells[xIndex][yIndex + 1].hasBeenVisited === false) {
+                            console.log(WallCells[xIndex][yIndex]);
+                            console.log(WallCells[xIndex][yIndex + 1]);
+
                             cellCounter++;
                             WallCells[xIndex][yIndex + 1].hasTopWall = false;
                             WallCells[xIndex][yIndex].hasBottomWall = false;
@@ -174,8 +221,11 @@ class Game {
                 }
                 // right
                 if (rand <= 1) {
-                    if (yIndex < maxYIndex - 1) {
-                        if (WallCells[xIndex][yIndex + 1].hasBeenVisited === false) {
+                    if (xIndex < maxXIndex) {
+                        if (WallCells[xIndex + 1][yIndex].hasBeenVisited === false) {
+                            console.log(WallCells[xIndex][yIndex]);
+                            console.log(WallCells[xIndex + 1][yIndex]);
+
                             cellCounter++;
                             WallCells[xIndex + 1][yIndex].hasLeftWall = false;
                             WallCells[xIndex][yIndex].hasRightWall = false;
