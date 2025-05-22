@@ -1,6 +1,8 @@
 import { Controlls } from "./controlls.js";
 import { Player } from "./objects/player.js";
 import { ObjectContext } from "./object_context.js";
+import { WallCell } from "./objects/wall_cell.js";
+import { Wall } from "./objects/wall.js";
 
 document.addEventListener("DOMContentLoaded", startGame);
 
@@ -60,6 +62,7 @@ class Game {
 
         this.generateWalls();
         this.renderBackground();
+
         requestAnimationFrame(this.loop.bind(this));
     }
 
@@ -67,16 +70,134 @@ class Game {
         const blockWidth = 100;
         const blockHeight = 100;
         const propability = 50 / 100;
-        for (let x = 0; x < this.ObjectCTX.borderX; x += blockWidth) {
-            for (let y = 0; y < this.ObjectCTX.borderY; y += blockHeight) {
-                if (Math.random() < propability) {
-                    this.ObjectCTX.registerWall(x, y, x + blockWidth, y);
-                }
-                if (Math.random() < propability) {
-                    this.ObjectCTX.registerWall(x, y, x, y + blockHeight);
-                }
+
+        const WallCells: WallCell[][] = [];
+        var cellCounter = 0;
+
+        const maxXIndex = this.ctxF.canvas.width / blockWidth;
+        const maxYIndex = this.ctxF.canvas.height / blockHeight;
+
+        console.log("width", maxXIndex);
+        console.log("height", maxYIndex);
+
+        for (var i = 0; i < maxXIndex; i++) {
+            WallCells[i] = [];
+            for (var j = 0; j < maxYIndex; j++) {
+                WallCells[i][j] = new WallCell(i * 100, j * 100);
             }
         }
+        var prevCoords: { x: number; y: number }[] = [];
+        var coords = { x: 0, y: 0 };
+        var safetyCounter = 0;
+
+        while (cellCounter < WallCells.length * WallCells[0].length) {
+            coords = generateCell(coords.x, coords.y);
+            if (coords.x === -1 && prevCoords.length > 0) {
+                coords = prevCoords.pop() as { x: number; y: number };
+            }
+            prevCoords.push(coords);
+            safetyCounter++;
+            if (safetyCounter > 1000) {
+                break;
+            }
+        }
+        //register all walls from wallcells
+        WallCells.forEach((element) => {
+            element.forEach((e) => {
+                if (e.hasBeenVisited) {
+                    if (e.hasTopWall) {
+                        this.ObjectCTX.registerWall(e.x, e.y, e.x + blockWidth, e.y);
+                    }
+                    if (e.hasRightWall) {
+                        this.ObjectCTX.registerWall(
+                            e.x + blockWidth,
+                            e.y,
+                            e.x + blockWidth,
+                            e.y + blockHeight
+                        );
+                    }
+                    if (e.hasBottomWall) {
+                        this.ObjectCTX.registerWall(
+                            e.x,
+                            e.y + blockHeight,
+                            e.x + blockWidth,
+                            e.y + blockHeight
+                        );
+                    }
+                    if (e.hasLeftWall) {
+                        this.ObjectCTX.registerWall(e.x, e.y, e.x, e.y + blockHeight);
+                    }
+                }
+            });
+        });
+
+        function generateCell(xIndex: number, yIndex: number): { x: number; y: number } {
+            var rand = Math.random();
+            // runs two times to always select something
+            for (var i = 0; i < 2; i++) {
+                if (WallCells[xIndex][yIndex].hasBeenVisited) {
+                    return { x: -1, y: -1 };
+                }
+                WallCells[xIndex][yIndex].hasBeenVisited = true;
+                // top
+                if (rand <= 0.25) {
+                    if (xIndex > 0) {
+                        if (WallCells[xIndex - 1][yIndex].hasBeenVisited === false) {
+                            cellCounter++;
+                            WallCells[xIndex][yIndex - 1].hasBottomWall = false;
+                            WallCells[xIndex][yIndex].hasTopWall = false;
+                            return { x: xIndex, y: yIndex - 1 };
+                        }
+                    }
+                }
+                // left
+                if (rand <= 0.5) {
+                    if (yIndex > 0) {
+                        if (WallCells[xIndex][yIndex - 1].hasBeenVisited === false) {
+                            cellCounter++;
+                            WallCells[xIndex - 1][yIndex].hasRightWall = false;
+                            WallCells[xIndex][yIndex].hasLeftWall = false;
+                            return { x: xIndex - 1, y: yIndex };
+                        }
+                    }
+                }
+                // bottom
+                if (rand <= 0.75) {
+                    if (xIndex < maxXIndex - 1) {
+                        if (WallCells[xIndex + 1][yIndex].hasBeenVisited === false) {
+                            cellCounter++;
+                            WallCells[xIndex][yIndex + 1].hasTopWall = false;
+                            WallCells[xIndex][yIndex].hasBottomWall = false;
+                            return { x: xIndex, y: yIndex + 1 };
+                        }
+                    }
+                }
+                // right
+                if (rand <= 1) {
+                    if (yIndex < maxYIndex - 1) {
+                        if (WallCells[xIndex][yIndex + 1].hasBeenVisited === false) {
+                            cellCounter++;
+                            WallCells[xIndex + 1][yIndex].hasLeftWall = false;
+                            WallCells[xIndex][yIndex].hasRightWall = false;
+                            return { x: xIndex + 1, y: yIndex };
+                        }
+                    }
+                }
+                rand = 0;
+            }
+            return { x: -1, y: -1 };
+        }
+
+        // for (let x = 0; x < this.ObjectCTX.borderX; x += blockWidth) {
+        //     for (let y = 0; y < this.ObjectCTX.borderY; y += blockHeight) {
+        //         if (Math.random() < propability) {
+        //             this.ObjectCTX.registerWall(x, y, x + blockWidth, y);
+        //         }
+        //         if (Math.random() < propability) {
+        //             this.ObjectCTX.registerWall(x, y, x, y + blockHeight);
+        //         }
+        //     }
+        // }
     }
 
     private loop(currentTime: number) {
