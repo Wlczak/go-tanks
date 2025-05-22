@@ -50,16 +50,33 @@ class Game {
         buffer.height = 600;
         this.buffer = buffer.getContext("2d") as CanvasRenderingContext2D;
 
-        this.ObjectCTX.registerPlayer(500, 500, "1", "Player 1", true);
+        this.ObjectCTX.registerPlayer(550, 550, "1", "Player 1", true);
         this.ObjectCTX.registerPlayer(300, 300, "2", "Player 2", false);
 
-        this.ObjectCTX.registerWall(50, 50, 400, 50);
-        this.ObjectCTX.registerWall(50, 120, 400, 120);
+        // this.ObjectCTX.registerWall(50, 50, 400, 50);
+        // this.ObjectCTX.registerWall(50, 120, 400, 120);
 
         this.Controlls = new Controlls();
 
+        this.generateWalls();
         this.renderBackground();
         requestAnimationFrame(this.loop.bind(this));
+    }
+
+    private generateWalls() {
+        const blockWidth = 100;
+        const blockHeight = 100;
+        const propability = 50 / 100;
+        for (let x = 0; x < this.ObjectCTX.borderX; x += blockWidth) {
+            for (let y = 0; y < this.ObjectCTX.borderY; y += blockHeight) {
+                if (Math.random() < propability) {
+                    this.ObjectCTX.registerWall(x, y, x + blockWidth, y);
+                }
+                if (Math.random() < propability) {
+                    this.ObjectCTX.registerWall(x, y, x, y + blockHeight);
+                }
+            }
+        }
     }
 
     private loop(currentTime: number) {

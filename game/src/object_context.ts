@@ -5,8 +5,8 @@ export class ObjectContext {
     public Players: Player[] = [];
     public Walls: Wall[] = [];
 
-    private borderX: number;
-    private borderY: number;
+    public borderX: number;
+    public borderY: number;
 
     private objectIdCounter = 0;
 
