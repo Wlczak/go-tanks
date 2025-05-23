@@ -3,6 +3,7 @@ export class Controlls {
     public down: boolean = false;
     public left: boolean = false;
     public right: boolean = false;
+    public space: boolean = false;
 
     private debug: boolean = false;
     constructor() {
@@ -63,6 +64,20 @@ export class Controlls {
             if (event.key === "ArrowRight") {
                 this.right = true;
                 if (this.debug) console.log("right on");
+            }
+        });
+
+        // space
+        document.addEventListener("keyup", (event) => {
+            if (event.key === " ") {
+                this.space = false;
+                if (this.debug) console.log("space off");
+            }
+        });
+        document.addEventListener("keydown", (event) => {
+            if (event.key === " ") {
+                this.space = true;
+                if (this.debug) console.log("space on");
             }
         });
     }

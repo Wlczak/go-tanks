@@ -21,6 +21,13 @@ export class Player implements Object {
     private img: HTMLImageElement;
     private Controlls: Controlls;
 
+    // bullet stats
+    public bulletsShot: number = 0;
+    public maxBulletsShot: number = 10;
+    public lastBulletShot: number = 0;
+    public bulletCooldown: number = 250;
+    public bulletLifetime: number = 10000;
+
     constructor(
         id: string,
         name: string,
@@ -99,6 +106,24 @@ export class Player implements Object {
             }
             if (this.Controlls.right) {
                 this.rotation += rotSpeed;
+            }
+            if (
+                this.Controlls.space &&
+                this.lastBulletShot + this.bulletCooldown < performance.now() &&
+                this.bulletsShot < this.maxBulletsShot
+            ) {
+                this.bulletsShot++;
+                setTimeout(() => {
+                    this.bulletsShot--;
+                }, this.bulletLifetime);
+                this.lastBulletShot = performance.now();
+                this.ObjectCTX.registerBullet(
+                    this.x + this.width / 2,
+                    this.y + this.height / 2,
+                    this.rotation,
+                    10,
+                    this.bulletLifetime
+                );
             }
         }
     }

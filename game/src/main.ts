@@ -367,6 +367,9 @@ class Game {
         this.ObjectCTX.Players.forEach((player) => {
             player.update();
         });
+        this.ObjectCTX.Bullets.forEach((bullet) => {
+            bullet.update();
+        });
     }
 
     private render() {

@@ -1,9 +1,11 @@
+import { Bullet } from "./objects/bullet.js";
 import { Player } from "./objects/player.js";
 import { Wall } from "./objects/wall.js";
 
 export class ObjectContext {
     public Players: Player[] = [];
     public Walls: Wall[] = [];
+    public Bullets: Bullet[] = [];
 
     public borderX: number;
     public borderY: number;
@@ -73,5 +75,18 @@ export class ObjectContext {
             }
         }
         return true;
+    }
+    public registerBullet(x: number, y: number, angle: number, speed: number, lifetime: number) {
+        console.log("pew");
+        const bullet = new Bullet(
+            x,
+            y,
+            { xSpeed: Math.cos(angle) * speed, ySpeed: Math.sin(angle) * speed },
+            this.objectIdCounter++,
+            10,
+            this,
+            performance.now() + lifetime
+        );
+        this.Bullets.push(bullet);
     }
 }
