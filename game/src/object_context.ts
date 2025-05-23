@@ -78,10 +78,16 @@ export class ObjectContext {
     }
     public registerBullet(x: number, y: number, angle: number, speed: number, lifetime: number) {
         console.log("pew");
+        angle = angle % 360;
+        console.log("angle", angle);
+
         const bullet = new Bullet(
             x,
             y,
-            { xSpeed: Math.cos(angle) * speed, ySpeed: Math.sin(angle) * speed },
+            {
+                xSpeed: -Math.sin(((angle - 180) * Math.PI) / 180) * speed,
+                ySpeed: -Math.cos((angle * Math.PI) / 180) * speed,
+            },
             this.objectIdCounter++,
             10,
             this,

@@ -380,6 +380,10 @@ class Game {
         this.ObjectCTX.Players.forEach((player) => {
             player.render(this.buffer);
         });
+
+        this.ObjectCTX.Bullets.forEach((bullet) => {
+            bullet.render(this.buffer);
+        });
         this.ctxF.reset();
         this.ctxF.drawImage(this.buffer.canvas, 0, 0);
     }

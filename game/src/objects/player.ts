@@ -27,6 +27,7 @@ export class Player implements Object {
     public lastBulletShot: number = 0;
     public bulletCooldown: number = 250;
     public bulletLifetime: number = 10000;
+    public bulletSpeed: number = 5;
 
     constructor(
         id: string,
@@ -118,10 +119,10 @@ export class Player implements Object {
                 }, this.bulletLifetime);
                 this.lastBulletShot = performance.now();
                 this.ObjectCTX.registerBullet(
-                    this.x + this.width / 2,
-                    this.y + this.height / 2,
+                    this.x + this.width / 2 + (Math.sin((this.rotation / 180) * Math.PI) * this.width) / 2,
+                    this.y + this.height / 2 - (Math.cos((this.rotation / 180) * Math.PI) * this.height) / 2,
                     this.rotation,
-                    10,
+                    this.bulletSpeed,
                     this.bulletLifetime
                 );
             }
