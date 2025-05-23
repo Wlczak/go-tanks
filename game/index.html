@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -35,10 +35,10 @@
                 </div>
             </div>
 
-            <div id="game-screen">
+            <div id="game-screen" style="display: none;">
                 <canvas id="foreground" width="800" height="600"
                     style="position: absolute; top: 0; left: 0; z-index: 1; border: 1px solid black; max-width: 100%; height: auto;"></canvas>
-                <canvas id="background" width="800" height="600"
+                <canvas id="background" width="800" height="600" class="has-background-light"
                     style="position: absolute; top: 0; left: 0; z-index: 0; border: 1px solid black; max-width: 100%; height: auto;"></canvas>
             </div>
         </div>

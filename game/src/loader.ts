@@ -1,8 +1,14 @@
 import { startGame } from "./main.js";
 
-function loadGame() {
-    const gameScreen = document.getElementById("game-screen") as HTMLDivElement;
+const skipLogin = true;
 
+const playButton = document.getElementById("play-button") as HTMLButtonElement;
+const gameMenu = document.getElementById("game-menu") as HTMLDivElement;
+const loginMenu = document.getElementById("login-menu") as HTMLDivElement;
+const gameScreen = document.getElementById("game-screen") as HTMLDivElement;
+const loginForm = document.getElementById("login-form") as HTMLFormElement;
+
+function loadGame() {
     import("./main.js").then(() => {
         startGame();
         gameScreen.style.display = "flex";
@@ -10,10 +16,6 @@ function loadGame() {
 }
 
 function loadGameMenu() {
-    const playButton = document.getElementById("play-button") as HTMLButtonElement;
-    const gameMenu = document.getElementById("game-menu") as HTMLDivElement;
-    const loginMenu = document.getElementById("login-menu") as HTMLDivElement;
-
     playButton.addEventListener("click", () => {
         loadGame();
         gameMenu.style.display = "none";
@@ -26,18 +28,20 @@ function loadGameMenu() {
 function login(username: string /*, password: string*/): boolean {
     return true;
 }
+if (skipLogin) {
+    loginMenu.style.display = "none";
+    loadGame();
+} else {
+    loginForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(loginForm);
+        const data = Object.fromEntries(formData.entries()) as {
+            username: string;
+            // password: string;
+        };
 
-const loginForm = document.getElementById("login-form") as HTMLFormElement;
-
-loginForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const formData = new FormData(loginForm);
-    const data = Object.fromEntries(formData.entries()) as {
-        username: string;
-        // password: string;
-    };
-
-    if (login(data.username /*, data.password*/)) {
-        loadGameMenu();
-    }
-});
+        if (login(data.username /*, data.password*/)) {
+            loadGameMenu();
+        }
+    });
+}
