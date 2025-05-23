@@ -1,8 +1,6 @@
 import { Controlls } from "./controlls.js";
-import { Player } from "./objects/player.js";
 import { ObjectContext } from "./object_context.js";
 import { WallCell } from "./objects/wall_cell.js";
-import { Wall } from "./objects/wall.js";
 
 document.addEventListener("DOMContentLoaded", startGame);
 
@@ -36,6 +34,11 @@ class Game {
     private readonly fps = 60;
     private readonly timestep = 1000 / this.fps;
 
+    // settings:
+    private readonly traceGeneration = false;
+    private readonly blockSize = 100;
+    private readonly maxGenCycles = 25000;
+
     private Controlls: Controlls;
     private ObjectCTX: ObjectContext;
 
@@ -60,22 +63,23 @@ class Game {
 
         this.Controlls = new Controlls();
 
-        this.generateWalls();
-        this.renderBackground();
+        this.generateWalls().then(() => {
+            this.renderBackground();
+        });
 
         requestAnimationFrame(this.loop.bind(this));
     }
 
-    private generateWalls() {
-        const blockWidth = 100;
-        const blockHeight = 100;
+    private async generateWalls() {
+        const blockWidth = this.blockSize;
+        const blockHeight = this.blockSize;
         const propability = 50 / 100;
 
         const WallCells: WallCell[][] = [];
         var cellCounter = 0;
 
-        const maxXIndex = this.ctxF.canvas.width / blockWidth - 1;
-        const maxYIndex = this.ctxF.canvas.height / blockHeight - 1;
+        const maxXIndex = Math.floor(this.ctxF.canvas.width / blockWidth - 1);
+        const maxYIndex = Math.floor(this.ctxF.canvas.height / blockHeight - 1);
 
         console.log("width", maxXIndex);
         console.log("height", maxYIndex);
@@ -83,29 +87,35 @@ class Game {
         for (var i = 0; i <= maxXIndex; i++) {
             WallCells[i] = [];
             for (var j = 0; j <= maxYIndex; j++) {
-                WallCells[i][j] = new WallCell(i * 100, j * 100);
+                WallCells[i][j] = new WallCell(i * blockWidth, j * blockHeight);
             }
         }
 
         console.log(WallCells);
 
+        function sleep(ms: number) {
+            return new Promise((resolve) => setTimeout(resolve, ms));
+        }
+
         var prevCoords: { x: number; y: number }[] = [];
         var coords = { x: 0, y: 0 };
         var safetyCounter = 0;
-
+        const self = this;
         while (cellCounter < WallCells.length * WallCells[0].length) {
-            coords = generateCell(coords.x, coords.y);
-            if (coords.x !== -1) {
-                prevCoords.push(coords);
+            if (this.traceGeneration) {
+                await sleep(1);
             }
-            if (coords.x === -1 && prevCoords.length > 0) {
+            coords = generateCell(coords.x, coords.y);
+            if (coords.x !== -1 && coords.y !== -1) {
+                prevCoords.push(coords);
+            } else if (coords.x === -1 && prevCoords.length > 0) {
                 coords = prevCoords.pop() as { x: number; y: number };
             } else if (coords.x === -1 && prevCoords.length == 0) {
                 console.log("stopped");
                 break;
             }
             safetyCounter++;
-            if (safetyCounter > 1000) {
+            if (safetyCounter > this.maxGenCycles) {
                 break;
             }
         }
@@ -171,6 +181,17 @@ class Game {
 
                 if (exit) {
                     console.log("exit", xIndex, yIndex);
+                    if (self.traceGeneration) {
+                        self.ctxB.save();
+                        self.ctxB.fillStyle = "green";
+                        self.ctxB.fillRect(
+                            xIndex * blockWidth,
+                            yIndex * blockHeight,
+                            blockWidth,
+                            blockHeight
+                        );
+                        self.ctxB.restore();
+                    }
                     return { x: -1, y: -1 };
                 }
             }
@@ -187,6 +208,18 @@ class Game {
                             cellCounter++;
                             WallCells[xIndex][yIndex - 1].hasBottomWall = false;
                             WallCells[xIndex][yIndex].hasTopWall = false;
+
+                            if (self.traceGeneration) {
+                                self.ctxB.save();
+                                self.ctxB.fillStyle = "yellow";
+                                self.ctxB.fillRect(
+                                    xIndex * blockWidth,
+                                    yIndex * blockHeight,
+                                    blockWidth,
+                                    blockHeight
+                                );
+                                self.ctxB.restore();
+                            }
                             return { x: xIndex, y: yIndex - 1 };
                         }
                     }
@@ -201,6 +234,17 @@ class Game {
                             cellCounter++;
                             WallCells[xIndex - 1][yIndex].hasRightWall = false;
                             WallCells[xIndex][yIndex].hasLeftWall = false;
+                            if (self.traceGeneration) {
+                                self.ctxB.save();
+                                self.ctxB.fillStyle = "blue";
+                                self.ctxB.fillRect(
+                                    xIndex * blockWidth,
+                                    yIndex * blockHeight,
+                                    blockWidth,
+                                    blockHeight
+                                );
+                                self.ctxB.restore();
+                            }
                             return { x: xIndex - 1, y: yIndex };
                         }
                     }
@@ -215,6 +259,18 @@ class Game {
                             cellCounter++;
                             WallCells[xIndex][yIndex + 1].hasTopWall = false;
                             WallCells[xIndex][yIndex].hasBottomWall = false;
+
+                            if (self.traceGeneration) {
+                                self.ctxB.save();
+                                self.ctxB.fillStyle = "red";
+                                self.ctxB.fillRect(
+                                    xIndex * blockWidth,
+                                    yIndex * blockHeight,
+                                    blockWidth,
+                                    blockHeight
+                                );
+                                self.ctxB.restore();
+                            }
                             return { x: xIndex, y: yIndex + 1 };
                         }
                     }
@@ -229,11 +285,30 @@ class Game {
                             cellCounter++;
                             WallCells[xIndex + 1][yIndex].hasLeftWall = false;
                             WallCells[xIndex][yIndex].hasRightWall = false;
+
+                            if (self.traceGeneration) {
+                                self.ctxB.save();
+                                self.ctxB.fillStyle = "purple";
+                                self.ctxB.fillRect(
+                                    xIndex * blockWidth,
+                                    yIndex * blockHeight,
+                                    blockWidth,
+                                    blockHeight
+                                );
+                                self.ctxB.restore();
+                            }
                             return { x: xIndex + 1, y: yIndex };
                         }
                     }
                 }
                 rand = 0;
+            }
+
+            if (self.traceGeneration) {
+                self.ctxB.save();
+                self.ctxB.fillStyle = "green";
+                self.ctxB.fillRect(xIndex * blockWidth, yIndex * blockHeight, blockWidth, blockHeight);
+                self.ctxB.restore();
             }
             return { x: -1, y: -1 };
         }
@@ -284,10 +359,11 @@ class Game {
     }
 
     private renderBackground() {
-        this.buffer.reset();
+        //this.buffer.drawImage(this.ctxB.canvas, 0, 0);
+        //this.buffer.reset();
 
-        this.buffer.fillStyle = "#E4DFDA";
-        this.buffer.fillRect(0, 0, this.ctxB.canvas.width, this.ctxB.canvas.height);
+        // this.buffer.fillStyle = "#E4DFDA";
+        // this.buffer.fillRect(0, 0, this.ctxB.canvas.width, this.ctxB.canvas.height);
 
         this.ObjectCTX.Walls.forEach((wall) => {
             wall.render(this.buffer);
