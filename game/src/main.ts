@@ -38,6 +38,7 @@ class Game {
     private readonly traceGeneration = false;
     private readonly blockSize = 100;
     private readonly maxGenCycles = 25000;
+    private readonly wallBreakPropability = 15 / 100; // values between 5% and 15% look nice
 
     private Controlls: Controlls;
     private ObjectCTX: ObjectContext;
@@ -117,6 +118,30 @@ class Game {
             safetyCounter++;
             if (safetyCounter > this.maxGenCycles) {
                 break;
+            }
+        }
+        // break additional walls
+        for (var i = 0; i < WallCells.length; i++) {
+            for (var j = 0; j < WallCells[0].length; j++) {
+                if (WallCells[i][j].hasBeenVisited) {
+                    var random = Math.random();
+                    if (i > 0 && random < self.wallBreakPropability) {
+                        WallCells[i][j].hasLeftWall = false;
+                        WallCells[i - 1][j].hasRightWall = false;
+                    }
+                    if (i < WallCells.length - 1 && random < self.wallBreakPropability) {
+                        WallCells[i][j].hasRightWall = false;
+                        WallCells[i + 1][j].hasLeftWall = false;
+                    }
+                    if (j > 0 && random < self.wallBreakPropability) {
+                        WallCells[i][j].hasTopWall = false;
+                        WallCells[i][j - 1].hasBottomWall = false;
+                    }
+                    if (j < WallCells[0].length - 1 && random < self.wallBreakPropability) {
+                        WallCells[i][j].hasBottomWall = false;
+                        WallCells[i][j + 1].hasTopWall = false;
+                    }
+                }
             }
         }
         //register all walls from wallcells
