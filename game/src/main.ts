@@ -2,9 +2,9 @@ import { Controlls } from "./controlls.js";
 import { ObjectContext } from "./object_context.js";
 import { WallCell } from "./objects/wall_cell.js";
 
-document.addEventListener("DOMContentLoaded", startGame);
+//document.addEventListener("DOMContentLoaded", startGame);
 
-function startGame() {
+export function startGame() {
     const canvasF = document.getElementById("foreground") as HTMLCanvasElement;
     const canvasB = document.getElementById("background") as HTMLCanvasElement;
 
