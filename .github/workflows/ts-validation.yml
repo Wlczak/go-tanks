@@ -1,4 +1,4 @@
-name: CI
+name: TypeScript CI
 
 on:
     push:
