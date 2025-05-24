@@ -3,10 +3,11 @@ package routes
 import (
 	"net/http"
 
+	"github.com/Wlczak/tanks/server"
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter() *gin.Engine {
+func SetupRouter(srv server.Server) *gin.Engine {
 
 	// Disable Console Color
 	// gin.DisableConsoleColor()
@@ -20,7 +21,25 @@ func SetupRouter() *gin.Engine {
 		})
 	}))
 
-	r.StaticFS("/", http.Dir("game"))
+	apiG := r.Group("/api")
+
+	apiG.GET("/createRoom", func(c *gin.Context) {
+
+		roomName := srv.OpenRoom()
+		c.JSON(200, gin.H{
+			"roomId": roomName,
+		})
+	})
+
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusPermanentRedirect, "/game")
+	})
+
+	r.Any("/server", func(c *gin.Context) {
+		srv.ServerWS(c.Writer, *c.Request)
+	})
+
+	r.StaticFS("/game", http.Dir("game"))
 
 	return r
 }
