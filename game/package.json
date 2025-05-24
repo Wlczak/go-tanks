@@ -10,7 +10,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "@eslint/js": "^9.27.0",
+    "eslint": "^9.27.0",
+    "globals": "^16.1.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.1"
   },
   "type": "module"
 }
