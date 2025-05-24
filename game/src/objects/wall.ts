@@ -1,6 +1,12 @@
+import { Object } from "../object.js";
 import { ObjectContext } from "../object_context.js";
 
-export class Wall {
+export class Wall implements Object {
+    // pointless RAM usage
+    x: number = -1;
+    y: number = -1;
+    collisionRadius: number = -1;
+
     startX: number;
     startY: number;
     endX: number;

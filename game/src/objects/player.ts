@@ -75,7 +75,7 @@ export class Player implements Object {
                 const intendedX = this.x + Math.sin((this.rotation / 180) * Math.PI) * speed;
 
                 if (
-                    this.ObjectCTX.checkCollisions(
+                    this.ObjectCTX.checkCollisionsBool(
                         intendedX + this.width / 2, // give coordinates at the center of the object
                         intendedY + this.height / 2,
                         this.collisionRadius,
@@ -91,7 +91,7 @@ export class Player implements Object {
                 const intendedX = this.x - Math.sin((this.rotation / 180) * Math.PI) * speed;
 
                 if (
-                    this.ObjectCTX.checkCollisions(
+                    this.ObjectCTX.checkCollisionsBool(
                         intendedX + this.width / 2, // give coordinates at the center of the object
                         intendedY + this.height / 2,
                         this.collisionRadius,
@@ -119,8 +119,10 @@ export class Player implements Object {
                 }, this.bulletLifetime);
                 this.lastBulletShot = performance.now();
                 this.ObjectCTX.registerBullet(
-                    this.x + this.width / 2 + (Math.sin((this.rotation / 180) * Math.PI) * this.width) / 2,
-                    this.y + this.height / 2 - (Math.cos((this.rotation / 180) * Math.PI) * this.height) / 2,
+                    this.x + this.width / 2 + (Math.sin((this.rotation / 180) * Math.PI) * this.width) / 1.2,
+                    this.y +
+                        this.height / 2 -
+                        (Math.cos((this.rotation / 180) * Math.PI) * this.height) / 1.8,
                     this.rotation,
                     this.bulletSpeed,
                     this.bulletLifetime
@@ -143,11 +145,11 @@ export class Player implements Object {
         buffer.restore();
 
         // collider circle
-        // buffer.strokeStyle = "black";
-        // buffer.fillStyle = "black";
-        // buffer.beginPath();
-        // buffer.arc(this.x + this.width / 2, this.y + this.height / 2, this.collisionRadius, 0, 2 * Math.PI);
-        // buffer.stroke();
+        buffer.strokeStyle = "black";
+        buffer.fillStyle = "black";
+        buffer.beginPath();
+        buffer.arc(this.x + this.width / 2, this.y + this.height / 2, this.collisionRadius, 0, 2 * Math.PI);
+        buffer.stroke();
 
         // buffer.fillRect(this.x, this.y, this.width, this.height);
 

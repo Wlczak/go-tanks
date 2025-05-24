@@ -1,5 +1,7 @@
 import { Object } from "../object.js";
 import { ObjectContext } from "../object_context.js";
+import { Player } from "./player.js";
+import { Wall } from "./wall.js";
 
 export class Bullet implements Object {
     x: number;
@@ -31,8 +33,36 @@ export class Bullet implements Object {
         console.log(this.speed);
     }
     public update() {
-        this.x += this.speed.xSpeed;
-        this.y += this.speed.ySpeed;
+        const intendedX = this.x + this.speed.xSpeed;
+        const intendedY = this.y + this.speed.ySpeed;
+
+        const collisionObjId = this.ObjectCTX.getCollision(
+            intendedX,
+            intendedY,
+            this.collisionRadius,
+            this.objectId
+        );
+        if (collisionObjId >= 0) {
+            const collisionObj = this.ObjectCTX.getCollisionObject(collisionObjId);
+
+            if (collisionObj instanceof Player) {
+                collisionObj.isAlive = false;
+                this.ObjectCTX.Bullets.splice(this.ObjectCTX.Bullets.indexOf(this), 1);
+            }
+            if (collisionObj instanceof Wall) {
+                console.log("hit wall");
+                const bulletAngle = Math.atan2(intendedY - this.y, intendedX - this.x);
+                console.log(bulletAngle);
+
+                const speed = Math.sqrt(
+                    Math.abs(this.speed.xSpeed * this.speed.xSpeed + this.speed.ySpeed * this.speed.ySpeed)
+                );
+                this.speed.xSpeed = -Math.sin(bulletAngle) * speed;
+                this.speed.ySpeed = -Math.cos(bulletAngle) * speed;
+            }
+        }
+        this.x = intendedX;
+        this.y = intendedY;
 
         if (performance.now() > this.lifetime) {
             this.ObjectCTX.Bullets.splice(this.ObjectCTX.Bullets.indexOf(this), 1);

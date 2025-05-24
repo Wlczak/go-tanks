@@ -1,3 +1,4 @@
+import { Object as GameObject } from "./object.js";
 import { Bullet } from "./objects/bullet.js";
 import { Player } from "./objects/player.js";
 import { Wall } from "./objects/wall.js";
@@ -30,15 +31,24 @@ export class ObjectContext {
         this.Walls.push(wall);
     }
 
-    public checkCollisions(intendedX: number, intendedY: number, radius: number, objectId: number): boolean {
-        if (
-            intendedX - radius < 0 ||
-            intendedX + radius >= this.borderX ||
-            intendedY - radius < 0 ||
-            intendedY + radius > this.borderY
-        ) {
-            return false;
-        }
+    public checkCollisionsBool(
+        intendedX: number,
+        intendedY: number,
+        radius: number,
+        objectId: number
+    ): boolean {
+        return this.getCollision(intendedX, intendedY, radius, objectId) < 0;
+    }
+
+    public getCollision(intendedX: number, intendedY: number, radius: number, objectId: number): number {
+        // if (
+        //     intendedX - radius < 0 ||
+        //     intendedX + radius >= this.borderX ||
+        //     intendedY - radius < 0 ||
+        //     intendedY + radius > this.borderY
+        // ) {
+        //     return false;
+        // }
 
         for (const player of this.Players) {
             if (player.objectId !== objectId) {
@@ -46,7 +56,7 @@ export class ObjectContext {
                 const dy = intendedY - player.y - player.height / 2;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 if (distance < radius + player.collisionRadius) {
-                    return false;
+                    return player.objectId;
                 }
             }
         }
@@ -71,10 +81,21 @@ export class ObjectContext {
             const dy = C.y - Py;
 
             if (dx * dx + dy * dy <= radius * radius) {
-                return false;
+                console.log("collision" + wall.objectId);
+                return wall.objectId;
             }
         }
-        return true;
+        return -1;
+    }
+
+    public getCollisionObject(objectId: number): GameObject | null {
+        for (const p of this.Players) {
+            if (p.objectId === objectId) return p;
+        }
+        for (const w of this.Walls) {
+            if (w.objectId === objectId) return w;
+        }
+        return null;
     }
     public registerBullet(x: number, y: number, angle: number, speed: number, lifetime: number) {
         console.log("pew");
@@ -89,7 +110,7 @@ export class ObjectContext {
                 ySpeed: -Math.cos((angle * Math.PI) / 180) * speed,
             },
             this.objectIdCounter++,
-            10,
+            5,
             this,
             performance.now() + lifetime
         );
