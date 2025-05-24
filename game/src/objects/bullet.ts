@@ -67,8 +67,9 @@ export class Bullet implements Object {
                 const speed = Math.sqrt(
                     Math.abs(this.speed.xSpeed * this.speed.xSpeed + this.speed.ySpeed * this.speed.ySpeed)
                 );
-                this.speed.xSpeed = Math.cos(((wallAngle - bulletAngle) * Math.PI) / 180) * speed;
-                this.speed.ySpeed = Math.sin(((wallAngle - bulletAngle) * Math.PI) / 180) * speed;
+                const reflectAngle = 2 * wallAngle - bulletAngle;
+                this.speed.xSpeed = Math.cos((reflectAngle * Math.PI) / 180) * speed;
+                this.speed.ySpeed = Math.sin((reflectAngle * Math.PI) / 180) * speed;
             }
         }
         this.x = intendedX;
