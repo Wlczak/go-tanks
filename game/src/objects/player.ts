@@ -26,7 +26,7 @@ export class Player implements Object {
     public maxBulletsShot: number = 10;
     public lastBulletShot: number = 0;
     public bulletCooldown: number = 250;
-    public bulletLifetime: number = 10000;
+    public bulletLifetime: number = 10 * 1000;
     public bulletSpeed: number = 5;
 
     constructor(
@@ -135,21 +135,23 @@ export class Player implements Object {
         var relX = this.x + this.width / 2;
         var relY = this.y + this.height / 2;
 
-        buffer.save();
-        buffer.translate(relX, relY);
-        buffer.rotate((this.rotation * Math.PI) / 180);
-        buffer.transform(this.width / this.img.width, 0, 0, this.height / this.img.height, 0, 0);
-        buffer.translate(-relX, -relY);
-        buffer.drawImage(this.img, relX - this.img.width / 2, relY - this.img.height / 2);
+        if (this.isAlive) {
+            buffer.save();
+            buffer.translate(relX, relY);
+            buffer.rotate((this.rotation * Math.PI) / 180);
+            buffer.transform(this.width / this.img.width, 0, 0, this.height / this.img.height, 0, 0);
+            buffer.translate(-relX, -relY);
+            buffer.drawImage(this.img, relX - this.img.width / 2, relY - this.img.height / 2);
 
-        buffer.restore();
+            buffer.restore();
+        }
 
         // collider circle
-        buffer.strokeStyle = "black";
-        buffer.fillStyle = "black";
-        buffer.beginPath();
-        buffer.arc(this.x + this.width / 2, this.y + this.height / 2, this.collisionRadius, 0, 2 * Math.PI);
-        buffer.stroke();
+        // buffer.strokeStyle = "black";
+        // buffer.fillStyle = "black";
+        // buffer.beginPath();
+        // buffer.arc(this.x + this.width / 2, this.y + this.height / 2, this.collisionRadius, 0, 2 * Math.PI);
+        // buffer.stroke();
 
         // buffer.fillRect(this.x, this.y, this.width, this.height);
 
