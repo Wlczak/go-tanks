@@ -51,14 +51,24 @@ export class Bullet implements Object {
             }
             if (collisionObj instanceof Wall) {
                 console.log("hit wall");
-                const bulletAngle = Math.atan2(intendedY - this.y, intendedX - this.x);
-                console.log(bulletAngle);
+                const bulletAngle = (Math.atan2(intendedY - this.y, intendedX - this.x) / Math.PI) * 180;
+                console.log("bulletAngle ", bulletAngle);
+
+                const wallAngle =
+                    (Math.atan2(
+                        collisionObj.endY - collisionObj.startY,
+                        collisionObj.endX - collisionObj.startX
+                    ) /
+                        Math.PI) *
+                    180;
+
+                console.log("wall angle", wallAngle);
 
                 const speed = Math.sqrt(
                     Math.abs(this.speed.xSpeed * this.speed.xSpeed + this.speed.ySpeed * this.speed.ySpeed)
                 );
-                this.speed.xSpeed = -Math.sin(bulletAngle) * speed;
-                this.speed.ySpeed = -Math.cos(bulletAngle) * speed;
+                this.speed.xSpeed = Math.cos(((wallAngle - bulletAngle) * Math.PI) / 180) * speed;
+                this.speed.ySpeed = Math.sin(((wallAngle - bulletAngle) * Math.PI) / 180) * speed;
             }
         }
         this.x = intendedX;
