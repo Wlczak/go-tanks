@@ -1,8 +1,12 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/Wlczak/tanks/logger"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
@@ -34,5 +38,25 @@ func (s *Server) OpenRoom() string {
 }
 
 func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
-	s.upgrader.Upgrade(w, &r, r.Header)
+	conn, err := s.upgrader.Upgrade(w, &r, nil)
+	if err != nil {
+		zap := logger.GetLogger()
+		zap.Error(err.Error())
+		w.Write([]byte(err.Error()))
+	}
+	conn.WriteJSON(gin.H{
+		"roomId": s.OpenRoom(),
+	})
+	type Read struct {
+		roomId string `json:"roomId"`
+	}
+	time.Sleep(time.Second * 5)
+
+	_, msg, err := conn.ReadMessage()
+	if err != nil {
+		zap := logger.GetLogger()
+		zap.Error(err.Error())
+	}
+	zap := logger.GetLogger()
+	zap.Info(fmt.Sprintf("Message: %s", msg))
 }
