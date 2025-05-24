@@ -1,0 +1,55 @@
+name: Go CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: ["*"]
+
+jobs:
+    build-and-test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Set up Go
+              uses: actions/setup-go@v4
+              with:
+                  go-version: "1.24.3"
+
+            - name: Tidy modules
+              run: |
+                  go mod tidy
+                  go mod verify
+
+            - name: golangci-lint
+              uses: golangci/golangci-lint-action@v8
+              with:
+                  version: v2.1
+
+            - name: Fmt
+              run: go fmt ./...
+
+            - name: Vet
+              run: go vet ./...
+
+            - name: Build
+              run: go build -v ./...
+
+            - uses: dominikh/staticcheck-action@v1
+              with:
+                  version: "latest"
+            # - name: Staticcheck
+            #   run: staticcheck ./...
+
+            # - name: GolangCI-Lint
+            #   run: golangci-lint run
+
+            - name: govulncheck
+              uses: golang/govulncheck-action@v1
+              with:
+                  go-version-input: 1.24.3
+                  go-package: ./...
+
+            # - name: Govulncheck
+            #   run: govulncheck ./...
