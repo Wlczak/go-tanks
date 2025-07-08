@@ -1,6 +1,6 @@
 services:
     tanks-server:
-        image: golang:1.24.3-alpine3.22
+        image: golang:1.24.4-alpine3.22
         volumes:
             - ./:/app
         working_dir: /app
