@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/Wlczak/tanks/logger"
-	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
@@ -33,7 +32,7 @@ func (s *Server) OpenRoom() string {
 			s.rooms[roomUid] = Room{}
 			return roomUid
 		}
-		return roomUid
+		//return roomUid
 	}
 }
 
@@ -42,14 +41,19 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 	if err != nil {
 		zap := logger.GetLogger()
 		zap.Error(err.Error())
-		w.Write([]byte(err.Error()))
+		_, err := w.Write([]byte(err.Error()))
+
+		if err != nil {
+			zap := logger.GetLogger()
+			zap.Error(err.Error())
+		}
 	}
-	conn.WriteJSON(gin.H{
-		"roomId": s.OpenRoom(),
-	})
-	type Read struct {
-		roomId string `json:"roomId"`
-	}
+	// conn.WriteJSON(gin.H{
+	// 	"roomId": s.OpenRoom(),
+	// })
+	// type Read struct {
+	// 	roomId string `json:"roomId"`
+	// }
 	time.Sleep(time.Second * 5)
 
 	_, msg, err := conn.ReadMessage()
