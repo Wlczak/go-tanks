@@ -1,8 +1,10 @@
+import { Client } from "./client.js";
 import { startGame } from "./main.js";
 
-const skipLogin = true;
+const skipLogin = false;
 
-const playButton = document.getElementById("play-button") as HTMLButtonElement;
+const singleplayerButton = document.getElementById("play-button-single") as HTMLButtonElement;
+const multiplayerButton = document.getElementById("play-button-multi") as HTMLButtonElement;
 const gameMenu = document.getElementById("game-menu") as HTMLDivElement;
 const loginMenu = document.getElementById("login-menu") as HTMLDivElement;
 const gameScreen = document.getElementById("game-screen") as HTMLDivElement;
@@ -16,9 +18,12 @@ function loadGame() {
 }
 
 function loadGameMenu() {
-    playButton.addEventListener("click", () => {
+    singleplayerButton.addEventListener("click", () => {
         loadGame();
         gameMenu.style.display = "none";
+    });
+    multiplayerButton.addEventListener("click", () => {
+        Client.openRoom();
     });
 
     loginMenu.style.display = "none";
@@ -26,6 +31,7 @@ function loadGameMenu() {
 }
 
 function login(username: string /*, password: string*/): boolean {
+    sessionStorage.setItem("username", username);
     return true;
 }
 if (skipLogin) {
@@ -44,4 +50,8 @@ if (skipLogin) {
             loadGameMenu();
         }
     });
+}
+
+if (sessionStorage.getItem("username")) {
+    loadGameMenu();
 }

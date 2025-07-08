@@ -5,6 +5,7 @@ import (
 
 	"github.com/Wlczak/tanks/logger"
 	"github.com/Wlczak/tanks/routes"
+	"github.com/Wlczak/tanks/server"
 	"github.com/joho/godotenv"
 )
 
@@ -37,7 +38,9 @@ func main() {
 		zap.Fatal(err.Error())
 	}
 
-	r := routes.SetupRouter()
+	server := server.NewServer()
+
+	r := routes.SetupRouter(server)
 
 	// Listen and Server in 0.0.0.0:8080
 	err = r.Run(":8080")

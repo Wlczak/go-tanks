@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tanks</title>
-    <script type="module" src="/dist/loader.js"></script>
+    <script type="module" src="dist/loader.js"></script>
     <link rel="shortcut icon" href="game-icon.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
     <script src="https://kit.fontawesome.com/d1942e3d64.js" crossorigin="anonymous"></script>
@@ -29,7 +29,8 @@
                 <div id="game-menu" class="box" style="display: none;">
                     <h1 class="title">Main menu</h1>
                     <div class="has-text-centered is-flex is-flex-direction-column">
-                        <button class="button is-primary" id="play-button">Play</button>
+                        <button class="button is-primary" id="play-button-single">Singleplayer</button>
+                        <button class="button is-info" id="play-button-multi">Multiplayer</button>
                         <button class="button is-warning">Options (WIP)</button>
                         <button><button class="button is-danger" onclick="history.back()">Exit</button>
                     </div>

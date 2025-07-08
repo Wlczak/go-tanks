@@ -68,8 +68,8 @@ export class Player implements Object {
 
     public update() {
         if (this.isPlayable) {
-            var speed = 4;
-            var rotSpeed = 5.5;
+            const speed = 4;
+            const rotSpeed = 5.5;
             if (this.Controlls.up) {
                 const intendedY = this.y - Math.cos((this.rotation / 180) * Math.PI) * speed;
                 const intendedX = this.x + Math.sin((this.rotation / 180) * Math.PI) * speed;
@@ -132,8 +132,8 @@ export class Player implements Object {
     }
 
     public render(buffer: CanvasRenderingContext2D) {
-        var relX = this.x + this.width / 2;
-        var relY = this.y + this.height / 2;
+        const relX = this.x + this.width / 2;
+        const relY = this.y + this.height / 2;
 
         if (this.isAlive) {
             buffer.save();
