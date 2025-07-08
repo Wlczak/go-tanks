@@ -12,7 +12,7 @@ export function startGame() {
         if (ctxF === null || ctxB === null) {
             console.log("Failed to get canvas context");
         } else {
-            var game = new Game(ctxF as CanvasRenderingContext2D, ctxB as CanvasRenderingContext2D);
+            new Game(ctxF as CanvasRenderingContext2D, ctxB as CanvasRenderingContext2D);
         }
     } else {
         document.body.innerHTML = "Error: failed to get canvas for game";
@@ -72,10 +72,9 @@ class Game {
     private async generateWalls() {
         const blockWidth = this.blockSize;
         const blockHeight = this.blockSize;
-        const propability = 50 / 100;
 
         const WallCells: WallCell[][] = [];
-        var cellCounter = 0;
+        let cellCounter = 0;
 
         const maxXIndex = Math.floor(this.ctxF.canvas.width / blockWidth - 1);
         const maxYIndex = Math.floor(this.ctxF.canvas.height / blockHeight - 1);
@@ -83,9 +82,9 @@ class Game {
         console.log("width", maxXIndex);
         console.log("height", maxYIndex);
 
-        for (var i = 0; i <= maxXIndex; i++) {
+        for (let i = 0; i <= maxXIndex; i++) {
             WallCells[i] = [];
-            for (var j = 0; j <= maxYIndex; j++) {
+            for (let j = 0; j <= maxYIndex; j++) {
                 WallCells[i][j] = new WallCell(i * blockWidth, j * blockHeight);
             }
         }
@@ -96,15 +95,15 @@ class Game {
             return new Promise((resolve) => setTimeout(resolve, ms));
         }
 
-        var prevCoords: { x: number; y: number }[] = [];
-        var coords = { x: 0, y: 0 };
-        var safetyCounter = 0;
-        const self = this;
+        const prevCoords: { x: number; y: number }[] = [];
+        let coords = { x: 0, y: 0 };
+        let safetyCounter = 0;
+        //const self = this;
         while (cellCounter < WallCells.length * WallCells[0].length) {
             if (this.traceGeneration) {
                 await sleep(1);
             }
-            coords = generateCell(coords.x, coords.y);
+            coords = generateCell(coords.x, coords.y, this);
             if (coords.x !== -1 && coords.y !== -1) {
                 prevCoords.push(coords);
             } else if (coords.x === -1 && prevCoords.length > 0) {
@@ -119,23 +118,23 @@ class Game {
             }
         }
         // break additional walls
-        for (var i = 0; i < WallCells.length; i++) {
-            for (var j = 0; j < WallCells[0].length; j++) {
+        for (let i = 0; i < WallCells.length; i++) {
+            for (let j = 0; j < WallCells[0].length; j++) {
                 if (WallCells[i][j].hasBeenVisited) {
-                    var random = Math.random();
-                    if (i > 0 && random < self.wallBreakPropability) {
+                    const random = Math.random();
+                    if (i > 0 && random < this.wallBreakPropability) {
                         WallCells[i][j].hasLeftWall = false;
                         WallCells[i - 1][j].hasRightWall = false;
                     }
-                    if (i < WallCells.length - 1 && random < self.wallBreakPropability) {
+                    if (i < WallCells.length - 1 && random < this.wallBreakPropability) {
                         WallCells[i][j].hasRightWall = false;
                         WallCells[i + 1][j].hasLeftWall = false;
                     }
-                    if (j > 0 && random < self.wallBreakPropability) {
+                    if (j > 0 && random < this.wallBreakPropability) {
                         WallCells[i][j].hasTopWall = false;
                         WallCells[i][j - 1].hasBottomWall = false;
                     }
-                    if (j < WallCells[0].length - 1 && random < self.wallBreakPropability) {
+                    if (j < WallCells[0].length - 1 && random < this.wallBreakPropability) {
                         WallCells[i][j].hasBottomWall = false;
                         WallCells[i][j + 1].hasTopWall = false;
                     }
@@ -172,11 +171,11 @@ class Game {
             });
         });
 
-        function generateCell(xIndex: number, yIndex: number): { x: number; y: number } {
-            var rand = Math.random();
+        function generateCell(xIndex: number, yIndex: number, self: Game): { x: number; y: number } {
+            let rand = Math.random();
             // runs two times to always select something
             if (WallCells[xIndex][yIndex].hasBeenVisited) {
-                var exit = true;
+                let exit = true;
                 // right
                 if (xIndex < maxXIndex) {
                     if (WallCells[xIndex + 1][yIndex].hasBeenVisited === false) {
@@ -218,7 +217,7 @@ class Game {
                     return { x: -1, y: -1 };
                 }
             }
-            for (var i = 0; i < 2; i++) {
+            for (let i = 0; i < 2; i++) {
                 console.log("run");
                 WallCells[xIndex][yIndex].hasBeenVisited = true;
                 // top
