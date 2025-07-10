@@ -3,7 +3,6 @@ package server
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/Wlczak/tanks/logger"
 	"github.com/google/uuid"
@@ -26,14 +25,14 @@ func NewServer() Server {
 }
 
 func (s *Server) OpenRoom() string {
-	for {
+	for i := 0; i < 1000; i++ {
 		roomUid := uuid.New().String()
 		if _, ok := s.rooms[roomUid]; !ok {
 			s.rooms[roomUid] = Room{}
 			return roomUid
 		}
-		//return roomUid
 	}
+	return ""
 }
 
 func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
@@ -48,13 +47,6 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 			zap.Error(err.Error())
 		}
 	}
-	// conn.WriteJSON(gin.H{
-	// 	"roomId": s.OpenRoom(),
-	// })
-	// type Read struct {
-	// 	roomId string `json:"roomId"`
-	// }
-	time.Sleep(time.Second * 5)
 
 	_, msg, err := conn.ReadMessage()
 	if err != nil {
