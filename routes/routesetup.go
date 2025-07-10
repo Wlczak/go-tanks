@@ -3,6 +3,7 @@ package routes
 import (
 	"net/http"
 
+	"github.com/Wlczak/tanks/routes/api/json"
 	"github.com/Wlczak/tanks/server"
 	"github.com/gin-gonic/gin"
 )
@@ -23,12 +24,9 @@ func SetupRouter(srv server.Server) *gin.Engine {
 
 	apiG := r.Group("/api")
 
-	apiG.GET("/createRoom", func(c *gin.Context) {
-
+	apiG.GET("/openRoom", func(c *gin.Context) {
 		roomName := srv.OpenRoom()
-		c.JSON(200, gin.H{
-			"roomId": roomName,
-		})
+		c.JSON(http.StatusOK, json.OpenRoom{RoomId: roomName})
 	})
 
 	r.GET("/", func(c *gin.Context) {
@@ -37,6 +35,10 @@ func SetupRouter(srv server.Server) *gin.Engine {
 
 	r.Any("/server", func(c *gin.Context) {
 		srv.ServerWS(c.Writer, *c.Request)
+	})
+	r.LoadHTMLGlob("templates/*")
+	r.GET("/wstest", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "wstest.tmpl", nil)
 	})
 
 	r.StaticFS("/game", http.Dir("game"))
