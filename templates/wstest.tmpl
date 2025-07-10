@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WS test</title>
+</head>
+
+<body>
+    <input type="text" name="chat">
+    <button type="button" name="send">Send</button>
+    <script>
+
+
+        const ws = new WebSocket("ws://localhost:8080/server");
+        ws.onopen = function (event) {
+            console.log("Open");
+            console.log(event);
+        };
+        ws.onclose = function (event) {
+            console.log("Close");
+            console.log(event);
+        };
+
+        chatInput = document.getElementsByName("chat")[0];
+        chatButton = document.getElementsByName("send")[0];
+
+        chatButton.addEventListener("click", () => {
+            ws.send(chatInput.value);
+            chatInput.value = "";
+        });
+
+    </script>
+</body>
+
+</html>
