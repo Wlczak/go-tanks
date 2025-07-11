@@ -26,7 +26,21 @@ func SetupRouter(srv server.Server) *gin.Engine {
 
 	apiG.GET("/openRoom", func(c *gin.Context) {
 		roomName := srv.OpenRoom()
-		c.JSON(http.StatusOK, json.OpenRoom{RoomId: roomName})
+		if roomName != "" {
+			c.JSON(http.StatusOK, json.OpenRoom{RoomId: roomName})
+		} else {
+			c.JSON(http.StatusInternalServerError, json.OpenRoom{RoomId: ""})
+		}
+	})
+
+	apiG.POST("/joinRoom", func(c *gin.Context) {
+		var req json.JoinRoomRequest
+		if err := c.BindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		//srv.JoinRoom()
 	})
 
 	r.GET("/", func(c *gin.Context) {
