@@ -11,12 +11,14 @@ import (
 
 type Server struct {
 	rooms    map[string]Room
+	players  map[string]Player
 	upgrader websocket.Upgrader
 }
 
 func NewServer() Server {
 	return Server{
-		rooms: map[string]Room{},
+		rooms:   map[string]Room{},
+		players: map[string]Player{},
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
@@ -67,6 +69,8 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 		}
 	}
 
+	s.players[player.ID] = player
+
 	zap.Info(fmt.Sprintf("Username: %s", player.Username))
 
 	for {
@@ -76,8 +80,6 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 			zap := logger.GetLogger()
 			zap.Error(err.Error())
 		}
-
 		conn.WriteMessage(websocket.TextMessage, []byte(msg))
 	}
-
 }
