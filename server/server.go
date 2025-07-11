@@ -61,7 +61,13 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 
 	for player.Username == "" {
 		fromClient := Player{}
-		conn.ReadJSON(&fromClient)
+		err := conn.ReadJSON(&fromClient)
+		if err != nil {
+			zap := logger.GetLogger()
+			zap.Error(err.Error())
+			conn.Close()
+			return
+		}
 		if fromClient.ID == player.ID {
 			player = fromClient
 		} else {
@@ -79,6 +85,8 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 		if err != nil {
 			zap := logger.GetLogger()
 			zap.Error(err.Error())
+			conn.Close()
+			return
 		}
 		conn.WriteMessage(websocket.TextMessage, []byte(msg))
 	}
