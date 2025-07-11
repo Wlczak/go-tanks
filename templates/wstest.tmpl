@@ -61,6 +61,11 @@
         });
         ws.onmessage = async function (event, joinButton) {
             let msg = JSON.parse(event.data)
+            if (msg.username != "") {
+                return
+            }
+            msg.username = "test";
+            ws.send(JSON.stringify(msg));
             //ws.send(JSON.stringify({ roomId: "room" }));
             uid = msg.uid;
             console.log(uid);

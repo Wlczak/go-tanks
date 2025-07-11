@@ -6,6 +6,7 @@ import (
 
 	"github.com/Wlczak/tanks/logger"
 	"github.com/Wlczak/tanks/routes/api/json"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
@@ -40,8 +41,29 @@ func (s *Server) OpenRoom() string {
 
 func (s *Server) JoinRoom(roomId string, uid string) error {
 	if _, ok := s.players[uid]; !ok {
+		return fmt.Errorf("player not logged in")
+	}
+
+	if _, ok := s.rooms[roomId]; !ok {
+		return fmt.Errorf("room not found")
+	}
+
+	if _, ok := s.rooms[roomId].Players[uid]; !ok {
 		loggedInPlayer := s.players[uid]
+		zap := logger.GetLogger()
+		zap.Info(fmt.Sprintf("player %s, with uid %s joined room %s", loggedInPlayer.Username, loggedInPlayer.UID, roomId))
+		if loggedInPlayer.Conn != nil {
+			zap.Info("player conn not nil")
+		} else {
+			zap.Info("player conn nil")
+		}
 		s.rooms[roomId].Players[uid] = loggedInPlayer
+		err := loggedInPlayer.Conn.WriteJSON(gin.H{
+			"roomId": roomId,
+		})
+		if err != nil {
+			return err
+		}
 	} else {
 		return fmt.Errorf("player already in room")
 	}
@@ -94,12 +116,11 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 			return
 		}
 		if fromClient.UID == player.UID {
-			player = fromClient
+			player.Username = fromClient.Username
 		} else {
 			zap.Warn("client provided missmatched id")
 		}
 	}
-
 	s.players[player.UID] = &player
 
 	zap.Info(fmt.Sprintf("Username: %s", player.Username))
