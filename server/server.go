@@ -68,17 +68,29 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 		Conn:     conn,
 	}
 
-	conn.WriteJSON(json.Player{
+	err = conn.WriteJSON(json.Player{
 		UID:      player.UID,
 		Username: player.Username,
 	})
+
+	if err != nil {
+		zap.Error(err.Error())
+		err = conn.Close()
+		if err != nil {
+			zap.Error(err.Error())
+		}
+		return
+	}
 
 	for player.Username == "" {
 		fromClient := Player{}
 		err := conn.ReadJSON(&fromClient)
 		if err != nil {
 			zap.Error(err.Error())
-			conn.Close()
+			err = conn.Close()
+			if err != nil {
+				zap.Error(err.Error())
+			}
 			return
 		}
 		if fromClient.UID == player.UID {
