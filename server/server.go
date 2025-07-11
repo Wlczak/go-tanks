@@ -109,7 +109,10 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 
 		if err != nil {
 			zap.Error(err.Error())
-			conn.Close()
+			err = conn.Close()
+			if err != nil {
+				zap.Error(err.Error())
+			}
 			return
 		}
 
@@ -117,7 +120,10 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 
 		if err != nil {
 			zap.Error(err.Error())
-			conn.Close()
+			err = conn.Close()
+			if err != nil {
+				zap.Error(err.Error())
+			}
 			return
 		}
 	}
