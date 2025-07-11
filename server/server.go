@@ -88,7 +88,7 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 			conn.Close()
 			return
 		}
-		conn.WriteMessage(websocket.TextMessage, []byte(msg))
+		err = conn.WriteMessage(websocket.TextMessage, []byte(msg))
 
 		if err != nil {
 			zap := logger.GetLogger()
