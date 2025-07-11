@@ -5,20 +5,21 @@ import (
 	"net/http"
 
 	"github.com/Wlczak/tanks/logger"
+	"github.com/Wlczak/tanks/routes/api/json"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
 type Server struct {
 	rooms    map[string]Room
-	players  map[string]Player
+	players  map[string]*Player
 	upgrader websocket.Upgrader
 }
 
 func NewServer() Server {
 	return Server{
 		rooms:   map[string]Room{},
-		players: map[string]Player{},
+		players: map[string]*Player{},
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
@@ -30,18 +31,21 @@ func (s *Server) OpenRoom() string {
 	for i := 0; i < 1000; i++ {
 		roomUid := uuid.New().String()
 		if _, ok := s.rooms[roomUid]; !ok {
-			s.rooms[roomUid] = Room{RID: roomUid}
+			s.rooms[roomUid] = Room{RID: roomUid, Players: map[string]*Player{}}
 			return roomUid
 		}
 	}
 	return ""
 }
 
-func (s *Server) JoinRoom(roomId string, player Player) {
-	if _, ok := s.players[player.UID]; !ok {
-		loggedInPlayer := s.players[player.UID]
-		s.rooms[roomId].Players[player.UID] = &loggedInPlayer
+func (s *Server) JoinRoom(roomId string, uid string) error {
+	if _, ok := s.players[uid]; !ok {
+		loggedInPlayer := s.players[uid]
+		s.rooms[roomId].Players[uid] = loggedInPlayer
+	} else {
+		return fmt.Errorf("player already in room")
 	}
+	return nil
 }
 
 func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
@@ -62,9 +66,13 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 	player := Player{
 		UID:      uuid.New().String(),
 		Username: "",
+		Conn:     conn,
 	}
 
-	conn.WriteJSON(player)
+	conn.WriteJSON(json.Player{
+		UID:      player.UID,
+		Username: player.Username,
+	})
 
 	for player.Username == "" {
 		fromClient := Player{}
@@ -82,7 +90,7 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 		}
 	}
 
-	s.players[player.UID] = player
+	s.players[player.UID] = &player
 
 	zap.Info(fmt.Sprintf("Username: %s", player.Username))
 

@@ -3,6 +3,7 @@ package routes
 import (
 	"net/http"
 
+	"github.com/Wlczak/tanks/logger"
 	"github.com/Wlczak/tanks/routes/api/json"
 	"github.com/Wlczak/tanks/server"
 	"github.com/gin-gonic/gin"
@@ -34,13 +35,22 @@ func SetupRouter(srv server.Server) *gin.Engine {
 	})
 
 	apiG.POST("/joinRoom", func(c *gin.Context) {
+		zap := logger.GetLogger()
+
 		var req json.JoinRoomRequest
-		if err := c.BindJSON(&req); err != nil {
+		if err := c.BindJSON(&req); err != nil || req.UID == "" || req.RoomId == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		//srv.JoinRoom()
+		err := srv.JoinRoom(req.RoomId, req.UID)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			zap.Error(err.Error())
+		} else {
+			c.JSON(http.StatusOK, json.JoinRoomRequest{UID: req.UID, RoomId: req.RoomId})
+		}
 	})
 
 	r.GET("/", func(c *gin.Context) {
