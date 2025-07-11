@@ -18,9 +18,16 @@
             console.log("Open");
             console.log(event);
         };
-        ws.onclose = function (event) {
+
+        ws.onclose = function (event, ws) {
             console.log("Close");
             console.log(event);
+
+        };
+        ws.onerror = function (event, ws) {
+            console.error("Error");
+            console.error(event);
+
         };
 
         chatInput = document.getElementsByName("chat")[0];

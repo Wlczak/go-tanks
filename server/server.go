@@ -36,6 +36,8 @@ func (s *Server) OpenRoom() string {
 }
 
 func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
+	zap := logger.GetLogger()
+
 	conn, err := s.upgrader.Upgrade(w, &r, nil)
 	if err != nil {
 		zap := logger.GetLogger()
@@ -48,11 +50,34 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 		}
 	}
 
-	_, msg, err := conn.ReadMessage()
-	if err != nil {
-		zap := logger.GetLogger()
-		zap.Error(err.Error())
+	player := Player{
+		ID:       uuid.New().String(),
+		Username: "",
 	}
-	zap := logger.GetLogger()
-	zap.Info(fmt.Sprintf("Message: %s", msg))
+
+	conn.WriteJSON(player)
+
+	for player.Username == "" {
+		fromClient := Player{}
+		conn.ReadJSON(&fromClient)
+		if fromClient.ID == player.ID {
+			player = fromClient
+		} else {
+			zap.Warn("client provided missmatched id")
+		}
+	}
+
+	zap.Info(fmt.Sprintf("Username: %s", player.Username))
+
+	for {
+		_, msg, err := conn.ReadMessage()
+
+		if err != nil {
+			zap := logger.GetLogger()
+			zap.Error(err.Error())
+		}
+
+		conn.WriteMessage(websocket.TextMessage, []byte(msg))
+	}
+
 }
