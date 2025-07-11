@@ -30,11 +30,18 @@ func (s *Server) OpenRoom() string {
 	for i := 0; i < 1000; i++ {
 		roomUid := uuid.New().String()
 		if _, ok := s.rooms[roomUid]; !ok {
-			s.rooms[roomUid] = Room{}
+			s.rooms[roomUid] = Room{RID: roomUid}
 			return roomUid
 		}
 	}
 	return ""
+}
+
+func (s *Server) JoinRoom(roomId string, player Player) {
+	if _, ok := s.players[player.UID]; !ok {
+		loggedInPlayer := s.players[player.UID]
+		s.rooms[roomId].Players[player.UID] = &loggedInPlayer
+	}
 }
 
 func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
@@ -53,7 +60,7 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 	}
 
 	player := Player{
-		ID:       uuid.New().String(),
+		UID:      uuid.New().String(),
 		Username: "",
 	}
 
@@ -68,14 +75,14 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 			conn.Close()
 			return
 		}
-		if fromClient.ID == player.ID {
+		if fromClient.UID == player.UID {
 			player = fromClient
 		} else {
 			zap.Warn("client provided missmatched id")
 		}
 	}
 
-	s.players[player.ID] = player
+	s.players[player.UID] = player
 
 	zap.Info(fmt.Sprintf("Username: %s", player.Username))
 
