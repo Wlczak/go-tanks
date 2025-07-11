@@ -53,7 +53,6 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 
 	conn, err := s.upgrader.Upgrade(w, &r, nil)
 	if err != nil {
-		zap := logger.GetLogger()
 		zap.Error(err.Error())
 		_, err := w.Write([]byte(err.Error()))
 
@@ -78,7 +77,6 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 		fromClient := Player{}
 		err := conn.ReadJSON(&fromClient)
 		if err != nil {
-			zap := logger.GetLogger()
 			zap.Error(err.Error())
 			conn.Close()
 			return
@@ -98,12 +96,17 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 		_, msg, err := conn.ReadMessage()
 
 		if err != nil {
-			zap := logger.GetLogger()
 			zap.Error(err.Error())
 			conn.Close()
 			return
 		}
 
 		err = conn.WriteMessage(websocket.TextMessage, []byte(msg))
+
+		if err != nil {
+			zap.Error(err.Error())
+			conn.Close()
+			return
+		}
 	}
 }
