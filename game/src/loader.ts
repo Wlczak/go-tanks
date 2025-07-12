@@ -20,7 +20,9 @@ function loadGame() {
         gameScreen.style.display = "flex";
     });
 }
-function loadMuntiplayerGame(conn: WebSocket) {}
+function loadMuntiplayerGame(conn: WebSocket) {
+    conn.send("yoho");
+}
 
 function loadGameMenu() {
     singleplayerButton.addEventListener("click", () => {
