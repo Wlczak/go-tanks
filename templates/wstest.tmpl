@@ -44,38 +44,17 @@
     <br>
     <br>
     <br>
+    <label for="uid">uid</label>
+    <input type="text" name="uid" id="uid">
+    <label for="roomId">roomId</label>
+    <input type="text" name="roomId" id="roomId">
     <button type="button" name="join">Join</button>
     <script>
 
         joinButton = document.getElementsByName("join")[0];
-        joinButton.addEventListener("click", () => {
-            fetch("/api/joinRoom", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ username: "test", roomId: "room" })
-            }).then(res => {
-                console.log(res);
-            });
-        });
-        ws.onmessage = async function (event, joinButton) {
-            let msg = JSON.parse(event.data)
-            if (msg.username != "") {
-                return
-            }
-            msg.username = "test";
-            ws.send(JSON.stringify(msg));
-            //ws.send(JSON.stringify({ roomId: "room" }));
-            uid = msg.uid;
-            console.log(uid);
-            const response = await fetch("/api/openRoom", {
-                method: "GET",
-            });
-            const fetchData = await response.json();
-            roomId = fetchData.roomId;
-            console.log(roomId);
-
+        joinButton.addEventListener("click", async (event) => {
+            uid = document.getElementById("uid").value;
+            roomId = document.getElementById("roomId").value;
             await fetch("/api/joinRoom", {
                 method: "POST",
                 headers: {
@@ -87,6 +66,38 @@
                     console.log(data);
                 }));
             });
+        });
+        ws.onmessage = async function (event) {
+            let msg = JSON.parse(event.data)
+            if (msg.username != "") {
+                return
+            }
+            msg.username = "test" + Math.floor(Math.random() * 100);
+            ws.send(JSON.stringify(msg));
+            //ws.send(JSON.stringify({ roomId: "room" }));
+            uid = msg.uid;
+            console.log(uid);
+            const response = await fetch("/api/openRoom", {
+                method: "GET",
+            });
+            const fetchData = await response.json();
+            roomId = fetchData.roomId;
+            console.log(roomId);
+
+            document.getElementById("uid").value = uid;
+            document.getElementById("roomId").value = roomId;
+
+            // await fetch("/api/joinRoom", {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json"
+            //     },
+            //     body: JSON.stringify({ uid: uid, roomId: roomId })
+            // }).then(res => {
+            //     console.log(res.json().then(data => {
+            //         console.log(data);
+            //     }));
+            // });
         }
 
 

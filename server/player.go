@@ -6,4 +6,5 @@ type Player struct {
 	UID      string
 	Username string
 	Conn     *websocket.Conn
+	Room     *Room
 }

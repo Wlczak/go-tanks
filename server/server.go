@@ -12,14 +12,14 @@ import (
 )
 
 type Server struct {
-	rooms    map[string]Room
+	rooms    map[string]*Room
 	players  map[string]*Player
 	upgrader websocket.Upgrader
 }
 
 func NewServer() Server {
 	return Server{
-		rooms:   map[string]Room{},
+		rooms:   map[string]*Room{},
 		players: map[string]*Player{},
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
@@ -32,7 +32,7 @@ func (s *Server) OpenRoom() string {
 	for i := 0; i < 1000; i++ {
 		roomUid := uuid.New().String()
 		if _, ok := s.rooms[roomUid]; !ok {
-			s.rooms[roomUid] = Room{RID: roomUid, Players: map[string]*Player{}}
+			s.rooms[roomUid] = &Room{RID: roomUid, Players: map[string]*Player{}}
 			return roomUid
 		}
 	}
@@ -58,6 +58,7 @@ func (s *Server) JoinRoom(roomId string, uid string) error {
 			zap.Info("player conn nil")
 		}
 		s.rooms[roomId].Players[uid] = loggedInPlayer
+		loggedInPlayer.Room = s.rooms[roomId]
 		err := loggedInPlayer.Conn.WriteJSON(gin.H{
 			"roomId": roomId,
 		})
@@ -137,15 +138,19 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 			return
 		}
 
-		err = conn.WriteMessage(websocket.TextMessage, []byte(msg))
-
-		if err != nil {
-			zap.Error(err.Error())
-			err = conn.Close()
+		for _, roomPlayer := range player.Room.Players {
+			if roomPlayer.UID == player.UID {
+				continue
+			}
+			err = roomPlayer.Conn.WriteMessage(websocket.TextMessage, []byte(msg))
 			if err != nil {
 				zap.Error(err.Error())
+				err = conn.Close()
+				if err != nil {
+					zap.Error(err.Error())
+				}
+				return
 			}
-			return
 		}
 	}
 }
