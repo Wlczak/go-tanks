@@ -1,5 +1,6 @@
 package server
 
 type Room struct {
-	Players map[string]Player
+	RID     string
+	Players map[string]*Player
 }

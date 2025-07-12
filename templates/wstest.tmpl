@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WS test</title>
+</head>
+
+<body>
+    <input type="text" name="chat">
+    <button type="button" name="send">Send</button>
+    <script>
+
+
+        const ws = new WebSocket("ws://localhost:8080/server");
+        ws.onopen = function (event) {
+            console.log("Open");
+            console.log(event);
+        };
+
+        ws.onclose = function (event, ws) {
+            console.log("Close");
+            console.log(event);
+
+        };
+        ws.onerror = function (event, ws) {
+            console.error("Error");
+            console.error(event);
+
+        };
+
+        chatInput = document.getElementsByName("chat")[0];
+        chatButton = document.getElementsByName("send")[0];
+
+        chatButton.addEventListener("click", () => {
+            ws.send(chatInput.value);
+            chatInput.value = "";
+        });
+
+    </script>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <label for="uid">uid</label>
+    <input type="text" name="uid" id="uid">
+    <label for="roomId">roomId</label>
+    <input type="text" name="roomId" id="roomId">
+    <button type="button" name="join">Join</button>
+    <script>
+
+        joinButton = document.getElementsByName("join")[0];
+        joinButton.addEventListener("click", async (event) => {
+            uid = document.getElementById("uid").value;
+            roomId = document.getElementById("roomId").value;
+            await fetch("/api/joinRoom", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ uid: uid, roomId: roomId })
+            }).then(res => {
+                console.log(res.json().then(data => {
+                    console.log(data);
+                }));
+            });
+        });
+        ws.onmessage = async function (event) {
+            let msg = JSON.parse(event.data)
+            if (msg.username != "") {
+                return
+            }
+            msg.username = "test" + Math.floor(Math.random() * 100);
+            ws.send(JSON.stringify(msg));
+            //ws.send(JSON.stringify({ roomId: "room" }));
+            uid = msg.uid;
+            console.log(uid);
+            const response = await fetch("/api/openRoom", {
+                method: "GET",
+            });
+            const fetchData = await response.json();
+            roomId = fetchData.roomId;
+            console.log(roomId);
+
+            document.getElementById("uid").value = uid;
+            document.getElementById("roomId").value = roomId;
+
+            // await fetch("/api/joinRoom", {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json"
+            //     },
+            //     body: JSON.stringify({ uid: uid, roomId: roomId })
+            // }).then(res => {
+            //     console.log(res.json().then(data => {
+            //         console.log(data);
+            //     }));
+            // });
+        }
+
+
+    </script>
+</body>
+
+</html>
