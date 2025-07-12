@@ -89,6 +89,10 @@ func (s *Server) ServerWS(w http.ResponseWriter, r http.Request) {
 		UID:      uuid.New().String(),
 		Username: "",
 		Conn:     conn,
+		Room: &Room{
+			RID:     "",
+			Players: map[string]*Player{},
+		},
 	}
 
 	err = conn.WriteJSON(json.Player{
