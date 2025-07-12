@@ -1,4 +1,3 @@
-import { Client } from "./client.js";
 import { startGame } from "./main.js";
 
 const skipLogin = false;
@@ -7,8 +6,12 @@ const singleplayerButton = document.getElementById("play-button-single") as HTML
 const multiplayerButton = document.getElementById("play-button-multi") as HTMLButtonElement;
 const gameMenu = document.getElementById("game-menu") as HTMLDivElement;
 const loginMenu = document.getElementById("login-menu") as HTMLDivElement;
+const multiplayerMenu = document.getElementById("multiplayer-menu") as HTMLDivElement;
 const gameScreen = document.getElementById("game-screen") as HTMLDivElement;
 const loginForm = document.getElementById("login-form") as HTMLFormElement;
+const multiplayerHostButton = document.getElementById("multiplayer-host-button") as HTMLButtonElement;
+const multiplayerJoinButton = document.getElementById("multiplayer-join-button") as HTMLButtonElement;
+const roomIdInput = document.getElementById("multiplayer-roomId-input") as HTMLInputElement;
 
 function loadGame() {
     import("./main.js").then(() => {
@@ -23,11 +26,22 @@ function loadGameMenu() {
         gameMenu.style.display = "none";
     });
     multiplayerButton.addEventListener("click", () => {
-        Client.openRoom();
+        loadMultiplayerMenu();
     });
 
     loginMenu.style.display = "none";
     gameMenu.style.display = "inline";
+}
+
+function loadMultiplayerMenu() {
+    gameMenu.style.display = "none";
+    multiplayerMenu.style.display = "inline";
+
+    multiplayerHostButton.addEventListener("click", () => {});
+    multiplayerJoinButton.addEventListener("click", () => {
+        const roomId = roomIdInput.value;
+        console.log(roomId);
+    });
 }
 
 function login(username: string /*, password: string*/): boolean {
