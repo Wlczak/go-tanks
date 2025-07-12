@@ -1,3 +1,4 @@
+import { Client } from "./client.js";
 import { startGame } from "./main.js";
 
 const skipLogin = false;
@@ -19,6 +20,7 @@ function loadGame() {
         gameScreen.style.display = "flex";
     });
 }
+function loadMuntiplayerGame(conn: WebSocket) {}
 
 function loadGameMenu() {
     singleplayerButton.addEventListener("click", () => {
@@ -37,7 +39,26 @@ function loadMultiplayerMenu() {
     gameMenu.style.display = "none";
     multiplayerMenu.style.display = "inline";
 
-    multiplayerHostButton.addEventListener("click", () => {});
+    multiplayerHostButton.addEventListener("click", async () => {
+        const roomId = await Client.openRoom();
+        sessionStorage.setItem("roomId", roomId);
+        const username = sessionStorage.getItem("username");
+        if (username == null) {
+            return;
+        }
+        // also sets the uid
+        const conn = await Client.getLoggedInServerConnection(username);
+        if (conn == null) {
+            return;
+        }
+
+        const uid = sessionStorage.getItem("uid");
+        if (uid == null) {
+            return;
+        }
+        Client.joinRoom(uid, roomId);
+        loadMuntiplayerGame(conn);
+    });
     multiplayerJoinButton.addEventListener("click", () => {
         const roomId = roomIdInput.value;
         console.log(roomId);
