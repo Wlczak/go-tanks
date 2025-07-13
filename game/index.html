@@ -27,12 +27,20 @@
                     </form>
                 </div>
                 <div id="game-menu" class="box" style="display: none;">
-                    <h1 class="title">Main menu</h1>
+                    <h1 class="title has-text-centered">Main menu</h1>
                     <div class="has-text-centered is-flex is-flex-direction-column">
                         <button class="button is-primary" id="play-button-single">Singleplayer</button>
                         <button class="button is-info" id="play-button-multi">Multiplayer</button>
                         <button class="button is-warning">Options (WIP)</button>
                         <button><button class="button is-danger" onclick="history.back()">Exit</button>
+                    </div>
+                </div>
+                <div id="multiplayer-menu" class="box" style="display: none;">
+                    <h1 class="title has-text-centered">Multiplayer</h1>
+                    <div class="has-text-centered is-flex is-flex-direction-column">
+                        <button class="button is-primary" id="multiplayer-host-button">Host</button>
+                        <button class="button is-info mt-4" id="multiplayer-join-button">Join</button>
+                        <input class="input" type="text" id="multiplayer-roomId-input">
                     </div>
                 </div>
             </div>
@@ -42,6 +50,12 @@
                     style="position: absolute; top: 0; left: 0; z-index: 1; border: 1px solid black; max-width: 100%; height: auto;"></canvas>
                 <canvas id="background" width="800" height="600" class="has-background-light"
                     style="position: absolute; top: 0; left: 0; z-index: 0; border: 1px solid black; max-width: 100%; height: auto;"></canvas>
+                <div id="roomIdBox" style="display: none;" class="box mt-4">roomId: <span
+                        onclick="navigator.clipboard.writeText(document.getElementById('roomId').textContent); const feedback = document.getElementById('copyFeedback');feedback.style.opacity = '1';setTimeout(() => {feedback.style.opacity = '0';}, 1000);"
+                        class="is-clickable" id="roomId"></span>
+                    <span id="copyFeedback"
+                        style="opacity: 0; transition: all 0.5s; margin-left: 10px; color: green; ">Copied!</span>
+                </div>
             </div>
         </div>
     </div>

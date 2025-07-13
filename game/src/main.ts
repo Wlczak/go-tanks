@@ -2,7 +2,7 @@ import { Controlls } from "./controlls.js";
 import { ObjectContext } from "./object_context.js";
 import { WallCell } from "./objects/wall_cell.js";
 
-export function startGame() {
+export function startGame(conn: WebSocket | null, isHost = false) {
     const canvasF = document.getElementById("foreground") as HTMLCanvasElement;
     const canvasB = document.getElementById("background") as HTMLCanvasElement;
 
@@ -10,9 +10,9 @@ export function startGame() {
         const ctxF = canvasF.getContext("2d");
         const ctxB = canvasB.getContext("2d");
         if (ctxF === null || ctxB === null) {
-            console.log("Failed to get canvas context");
+            console.error("Failed to get canvas context");
         } else {
-            new Game(ctxF as CanvasRenderingContext2D, ctxB as CanvasRenderingContext2D);
+            new Game(ctxF, ctxB, conn, isHost);
         }
     } else {
         document.body.innerHTML = "Error: failed to get canvas for game";
@@ -23,7 +23,7 @@ export function startGame() {
     }
 }
 
-class Game {
+export class Game {
     private ctxF: CanvasRenderingContext2D;
     private ctxB: CanvasRenderingContext2D;
     private buffer: CanvasRenderingContext2D;
@@ -41,30 +41,55 @@ class Game {
     private Controlls: Controlls;
     private ObjectCTX: ObjectContext;
 
-    constructor(ctxF: CanvasRenderingContext2D, ctxB: CanvasRenderingContext2D) {
+    constructor(
+        ctxF: CanvasRenderingContext2D,
+        ctxB: CanvasRenderingContext2D,
+        conn: WebSocket | null,
+        isHost: boolean
+    ) {
         this.ctxF = ctxF;
         this.ctxB = ctxB;
 
-        this.ObjectCTX = new ObjectContext(ctxF.canvas.width, ctxF.canvas.height);
+        this.ObjectCTX = new ObjectContext(this, ctxF.canvas.width, ctxF.canvas.height, conn, isHost);
 
-        console.log(ctxF.canvas.width, ctxF.canvas.height);
+        //console.log(ctxF.canvas.width, ctxF.canvas.height);
 
         const buffer = document.createElement("canvas") as HTMLCanvasElement;
         buffer.width = 800;
         buffer.height = 600;
         this.buffer = buffer.getContext("2d") as CanvasRenderingContext2D;
 
-        this.ObjectCTX.registerPlayer(550, 550, "1", "Player 1", true);
-        this.ObjectCTX.registerPlayer(300, 300, "2", "Player 2", false);
-
         // this.ObjectCTX.registerWall(50, 50, 400, 50);
         // this.ObjectCTX.registerWall(50, 120, 400, 120);
 
         this.Controlls = new Controlls();
 
-        this.generateWalls().then(() => {
-            this.renderBackground();
-        });
+        if (this.ObjectCTX.isMultiplayer) {
+            const username = sessionStorage.getItem("username");
+            const uid = sessionStorage.getItem("uid");
+            if (uid == null || username == null) {
+                window.location.reload();
+                return;
+            }
+            const xBlocks = this.ctxB.canvas.width / this.blockSize;
+            const yBlocks = this.ctxB.canvas.height / this.blockSize;
+
+            const playerX = Math.floor(Math.random() * xBlocks) * this.blockSize + 30; // + 30 is for center offset
+            const playerY = Math.floor(Math.random() * yBlocks) * this.blockSize + 30;
+
+            this.ObjectCTX.registerPlayer(playerX, playerY, uid, username, true);
+            if (this.ObjectCTX.isHost) {
+                this.generateWalls().then(() => {
+                    this.renderBackground();
+                });
+            }
+        } else {
+            this.ObjectCTX.registerPlayer(550, 550, "1", "Player 1", true);
+            this.ObjectCTX.registerPlayer(300, 300, "2", "Player 2", false);
+            this.generateWalls().then(() => {
+                this.renderBackground();
+            });
+        }
 
         requestAnimationFrame(this.loop.bind(this));
     }
@@ -79,8 +104,8 @@ class Game {
         const maxXIndex = Math.floor(this.ctxF.canvas.width / blockWidth - 1);
         const maxYIndex = Math.floor(this.ctxF.canvas.height / blockHeight - 1);
 
-        console.log("width", maxXIndex);
-        console.log("height", maxYIndex);
+        // console.log("width", maxXIndex);
+        // console.log("height", maxYIndex);
 
         for (let i = 0; i <= maxXIndex; i++) {
             WallCells[i] = [];
@@ -89,7 +114,7 @@ class Game {
             }
         }
 
-        console.log(WallCells);
+        //console.log(WallCells);
 
         function sleep(ms: number) {
             return new Promise((resolve) => setTimeout(resolve, ms));
@@ -109,7 +134,7 @@ class Game {
             } else if (coords.x === -1 && prevCoords.length > 0) {
                 coords = prevCoords.pop() as { x: number; y: number };
             } else if (coords.x === -1 && prevCoords.length == 0) {
-                console.log("stopped");
+                //console.log("stopped");
                 break;
             }
             safetyCounter++;
@@ -202,7 +227,7 @@ class Game {
                 }
 
                 if (exit) {
-                    console.log("exit", xIndex, yIndex);
+                    //console.log("exit", xIndex, yIndex);
                     if (self.traceGeneration) {
                         self.ctxB.save();
                         self.ctxB.fillStyle = "green";
@@ -218,14 +243,14 @@ class Game {
                 }
             }
             for (let i = 0; i < 2; i++) {
-                console.log("run");
+                //console.log("run");
                 WallCells[xIndex][yIndex].hasBeenVisited = true;
                 // top
                 if (rand <= 0.25) {
                     if (yIndex > 0) {
                         if (WallCells[xIndex][yIndex - 1].hasBeenVisited === false) {
-                            console.log(WallCells[xIndex][yIndex]);
-                            console.log(WallCells[xIndex][yIndex - 1]);
+                            // console.log(WallCells[xIndex][yIndex]);
+                            // console.log(WallCells[xIndex][yIndex - 1]);
 
                             cellCounter++;
                             WallCells[xIndex][yIndex - 1].hasBottomWall = false;
@@ -250,8 +275,8 @@ class Game {
                 if (rand <= 0.5) {
                     if (xIndex > 0) {
                         if (WallCells[xIndex - 1][yIndex].hasBeenVisited === false) {
-                            console.log(WallCells[xIndex][yIndex]);
-                            console.log(WallCells[xIndex - 1][yIndex]);
+                            // console.log(WallCells[xIndex][yIndex]);
+                            // console.log(WallCells[xIndex - 1][yIndex]);
 
                             cellCounter++;
                             WallCells[xIndex - 1][yIndex].hasRightWall = false;
@@ -275,8 +300,8 @@ class Game {
                 if (rand <= 0.75) {
                     if (yIndex < maxYIndex) {
                         if (WallCells[xIndex][yIndex + 1].hasBeenVisited === false) {
-                            console.log(WallCells[xIndex][yIndex]);
-                            console.log(WallCells[xIndex][yIndex + 1]);
+                            // console.log(WallCells[xIndex][yIndex]);
+                            // console.log(WallCells[xIndex][yIndex + 1]);
 
                             cellCounter++;
                             WallCells[xIndex][yIndex + 1].hasTopWall = false;
@@ -301,8 +326,8 @@ class Game {
                 if (rand <= 1) {
                     if (xIndex < maxXIndex) {
                         if (WallCells[xIndex + 1][yIndex].hasBeenVisited === false) {
-                            console.log(WallCells[xIndex][yIndex]);
-                            console.log(WallCells[xIndex + 1][yIndex]);
+                            // console.log(WallCells[xIndex][yIndex]);
+                            // console.log(WallCells[xIndex + 1][yIndex]);
 
                             cellCounter++;
                             WallCells[xIndex + 1][yIndex].hasLeftWall = false;
@@ -387,7 +412,7 @@ class Game {
         this.ctxF.drawImage(this.buffer.canvas, 0, 0);
     }
 
-    private renderBackground() {
+    public renderBackground() {
         //this.buffer.drawImage(this.ctxB.canvas, 0, 0);
         //this.buffer.reset();
 

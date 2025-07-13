@@ -36,4 +36,23 @@ export class Wall implements Object {
         ctx.lineTo(this.endX, this.endY);
         ctx.stroke();
     }
+
+    public toObject(): object {
+        return {
+            startX: this.startX,
+            startY: this.startY,
+            endX: this.endX,
+            endY: this.endY,
+        };
+    }
 }
+
+export type WallContent = {
+    contentType: "wall";
+    content: {
+        startX: number;
+        startY: number;
+        endX: number;
+        endY: number;
+    };
+};
