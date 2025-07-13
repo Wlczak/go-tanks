@@ -42,38 +42,46 @@ function loadGameMenu() {
     gameMenu.style.display = "inline";
 }
 
+async function joinRoom(roomId: string) {
+    sessionStorage.setItem("roomId", roomId);
+    const username = sessionStorage.getItem("username");
+    if (username == null) {
+        return;
+    }
+    // also sets the uid
+    const conn = await Client.getLoggedInServerConnection(username);
+    if (conn == null) {
+        return;
+    }
+
+    const uid = sessionStorage.getItem("uid");
+    if (uid == null) {
+        return;
+    }
+    if ((await Client.joinRoom(uid, roomId)) == false) {
+        console.log("could not join room");
+        window.location.reload();
+        return;
+    }
+    multiplayerMenu.style.display = "none";
+
+    roomIdBox.style.display = "inline";
+    roomIdDisplay.textContent = roomId;
+
+    loadMuntiplayerGame(conn);
+}
+
 function loadMultiplayerMenu() {
     gameMenu.style.display = "none";
     multiplayerMenu.style.display = "inline";
 
     multiplayerHostButton.addEventListener("click", async () => {
         const roomId = await Client.openRoom();
-        sessionStorage.setItem("roomId", roomId);
-        const username = sessionStorage.getItem("username");
-        if (username == null) {
-            return;
-        }
-        // also sets the uid
-        const conn = await Client.getLoggedInServerConnection(username);
-        if (conn == null) {
-            return;
-        }
-
-        const uid = sessionStorage.getItem("uid");
-        if (uid == null) {
-            return;
-        }
-        Client.joinRoom(uid, roomId);
-        multiplayerMenu.style.display = "none";
-
-        roomIdBox.style.display = "inline";
-        roomIdDisplay.textContent = roomId;
-
-        loadMuntiplayerGame(conn);
+        joinRoom(roomId);
     });
     multiplayerJoinButton.addEventListener("click", () => {
         const roomId = roomIdInput.value;
-        console.log(roomId);
+        joinRoom(roomId);
     });
 }
 

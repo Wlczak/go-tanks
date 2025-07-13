@@ -30,13 +30,14 @@ export class Client {
         return roomId;
     }
 
-    public static async joinRoom(uid: string, roomId: string) {
-        await fetch("/api/joinRoom", {
+    public static async joinRoom(uid: string, roomId: string): Promise<boolean> {
+        const result = await fetch("/api/joinRoom", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ uid: uid, roomId: roomId }),
         });
+        return result.ok;
     }
 }
