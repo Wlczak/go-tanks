@@ -52,7 +52,7 @@ export class Game {
 
         this.ObjectCTX = new ObjectContext(this, ctxF.canvas.width, ctxF.canvas.height, conn, isHost);
 
-        console.log(ctxF.canvas.width, ctxF.canvas.height);
+        //console.log(ctxF.canvas.width, ctxF.canvas.height);
 
         const buffer = document.createElement("canvas") as HTMLCanvasElement;
         buffer.width = 800;

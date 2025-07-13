@@ -59,7 +59,7 @@ async function joinRoom(roomId: string, isHost: boolean) {
         return;
     }
     if ((await Client.joinRoom(uid, roomId)) == false) {
-        console.log("could not join room");
+        console.error("could not join room");
         window.location.reload();
         return;
     }
