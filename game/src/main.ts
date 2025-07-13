@@ -2,7 +2,7 @@ import { Controlls } from "./controlls.js";
 import { ObjectContext } from "./object_context.js";
 import { WallCell } from "./objects/wall_cell.js";
 
-export function startGame(conn: WebSocket | null) {
+export function startGame(conn: WebSocket | null, isHost = false) {
     const canvasF = document.getElementById("foreground") as HTMLCanvasElement;
     const canvasB = document.getElementById("background") as HTMLCanvasElement;
 
@@ -12,7 +12,7 @@ export function startGame(conn: WebSocket | null) {
         if (ctxF === null || ctxB === null) {
             console.error("Failed to get canvas context");
         } else {
-            new Game(ctxF, ctxB, conn);
+            new Game(ctxF, ctxB, conn, isHost);
         }
     } else {
         document.body.innerHTML = "Error: failed to get canvas for game";
@@ -41,11 +41,16 @@ class Game {
     private Controlls: Controlls;
     private ObjectCTX: ObjectContext;
 
-    constructor(ctxF: CanvasRenderingContext2D, ctxB: CanvasRenderingContext2D, conn: WebSocket | null) {
+    constructor(
+        ctxF: CanvasRenderingContext2D,
+        ctxB: CanvasRenderingContext2D,
+        conn: WebSocket | null,
+        isHost: boolean
+    ) {
         this.ctxF = ctxF;
         this.ctxB = ctxB;
 
-        this.ObjectCTX = new ObjectContext(ctxF.canvas.width, ctxF.canvas.height, conn);
+        this.ObjectCTX = new ObjectContext(ctxF.canvas.width, ctxF.canvas.height, conn, isHost);
 
         console.log(ctxF.canvas.width, ctxF.canvas.height);
 
@@ -73,14 +78,18 @@ class Game {
             const playerY = Math.floor(Math.random() * yBlocks) * this.blockSize + 30;
 
             this.ObjectCTX.registerPlayer(playerX, playerY, uid, username, true);
+            if (this.ObjectCTX.isHost) {
+                this.generateWalls().then(() => {
+                    this.renderBackground();
+                });
+            }
         } else {
             this.ObjectCTX.registerPlayer(550, 550, "1", "Player 1", true);
             this.ObjectCTX.registerPlayer(300, 300, "2", "Player 2", false);
+            this.generateWalls().then(() => {
+                this.renderBackground();
+            });
         }
-
-        this.generateWalls().then(() => {
-            this.renderBackground();
-        });
 
         requestAnimationFrame(this.loop.bind(this));
     }

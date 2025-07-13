@@ -14,14 +14,26 @@ export class ObjectContext {
     private objectIdCounter = 0;
 
     public isMultiplayer = false;
-    private conn: WebSocket;
+    private conn?: WebSocket;
+    public isHost;
 
-    constructor(borderX: number, borderY: number, conn: WebSocket | null) {
+    constructor(borderX: number, borderY: number, conn: WebSocket | null, isHost: boolean) {
         this.borderX = borderX;
         this.borderY = borderY;
+        this.isHost = isHost;
         if (conn != null) {
             this.isMultiplayer = true;
             this.conn = conn;
+            this.connectMultiplayer();
+        }
+    }
+
+    private connectMultiplayer() {
+        if (this.conn == null) {
+            return;
+        }
+        if (!this.isHost) {
+            this.conn.send(JSON.stringify({ type: "download" }));
         }
     }
 

@@ -22,9 +22,9 @@ function loadGame() {
         gameScreen.style.display = "flex";
     });
 }
-function loadMuntiplayerGame(conn: WebSocket) {
+function loadMuntiplayerGame(conn: WebSocket, isHost: boolean) {
     import("./main.js").then(() => {
-        startGame(conn);
+        startGame(conn, isHost);
         gameScreen.style.display = "flex";
     });
 }
@@ -42,7 +42,7 @@ function loadGameMenu() {
     gameMenu.style.display = "inline";
 }
 
-async function joinRoom(roomId: string) {
+async function joinRoom(roomId: string, isHost: boolean) {
     sessionStorage.setItem("roomId", roomId);
     const username = sessionStorage.getItem("username");
     if (username == null) {
@@ -68,7 +68,7 @@ async function joinRoom(roomId: string) {
     roomIdBox.style.display = "inline";
     roomIdDisplay.textContent = roomId;
 
-    loadMuntiplayerGame(conn);
+    loadMuntiplayerGame(conn, isHost);
 }
 
 function loadMultiplayerMenu() {
@@ -77,11 +77,11 @@ function loadMultiplayerMenu() {
 
     multiplayerHostButton.addEventListener("click", async () => {
         const roomId = await Client.openRoom();
-        joinRoom(roomId);
+        joinRoom(roomId, true);
     });
     multiplayerJoinButton.addEventListener("click", () => {
         const roomId = roomIdInput.value;
-        joinRoom(roomId);
+        joinRoom(roomId, false);
     });
 }
 
