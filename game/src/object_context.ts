@@ -88,7 +88,7 @@ export class ObjectContext {
             const dy = C.y - Py;
 
             if (dx * dx + dy * dy <= radius * radius) {
-                console.log("collision" + wall.objectId);
+                //console.log("collision" + wall.objectId);
                 return wall.objectId;
             }
         }
@@ -105,9 +105,9 @@ export class ObjectContext {
         return null;
     }
     public registerBullet(x: number, y: number, angle: number, speed: number, lifetime: number) {
-        console.log("pew");
+        //console.log("pew");
         angle = angle % 360;
-        console.log("angle", angle);
+        //console.log("angle", angle);
 
         const bullet = new Bullet(
             x,

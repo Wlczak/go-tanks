@@ -30,7 +30,7 @@ export class Bullet implements Object {
         this.ObjectCTX = ctx;
         this.lifetime = lifetime;
 
-        console.log(this.speed);
+        //console.log(this.speed);
     }
     public update() {
         const intendedX = this.x + this.speed.xSpeed;
@@ -50,9 +50,9 @@ export class Bullet implements Object {
                 this.ObjectCTX.Bullets.splice(this.ObjectCTX.Bullets.indexOf(this), 1);
             }
             if (collisionObj instanceof Wall) {
-                console.log("hit wall");
+                //console.log("hit wall");
                 const bulletAngle = (Math.atan2(intendedY - this.y, intendedX - this.x) / Math.PI) * 180;
-                console.log("bulletAngle ", bulletAngle);
+                //console.log("bulletAngle ", bulletAngle);
 
                 const wallAngle =
                     (Math.atan2(
@@ -62,7 +62,7 @@ export class Bullet implements Object {
                         Math.PI) *
                     180;
 
-                console.log("wall angle", wallAngle);
+                //console.log("wall angle", wallAngle);
 
                 const speed = Math.sqrt(
                     Math.abs(this.speed.xSpeed * this.speed.xSpeed + this.speed.ySpeed * this.speed.ySpeed)

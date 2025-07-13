@@ -10,7 +10,7 @@ export function startGame(conn: WebSocket | null) {
         const ctxF = canvasF.getContext("2d");
         const ctxB = canvasB.getContext("2d");
         if (ctxF === null || ctxB === null) {
-            console.log("Failed to get canvas context");
+            console.error("Failed to get canvas context");
         } else {
             new Game(ctxF, ctxB, conn);
         }
@@ -95,8 +95,8 @@ class Game {
         const maxXIndex = Math.floor(this.ctxF.canvas.width / blockWidth - 1);
         const maxYIndex = Math.floor(this.ctxF.canvas.height / blockHeight - 1);
 
-        console.log("width", maxXIndex);
-        console.log("height", maxYIndex);
+        // console.log("width", maxXIndex);
+        // console.log("height", maxYIndex);
 
         for (let i = 0; i <= maxXIndex; i++) {
             WallCells[i] = [];
@@ -105,7 +105,7 @@ class Game {
             }
         }
 
-        console.log(WallCells);
+        //console.log(WallCells);
 
         function sleep(ms: number) {
             return new Promise((resolve) => setTimeout(resolve, ms));
@@ -125,7 +125,7 @@ class Game {
             } else if (coords.x === -1 && prevCoords.length > 0) {
                 coords = prevCoords.pop() as { x: number; y: number };
             } else if (coords.x === -1 && prevCoords.length == 0) {
-                console.log("stopped");
+                //console.log("stopped");
                 break;
             }
             safetyCounter++;
@@ -218,7 +218,7 @@ class Game {
                 }
 
                 if (exit) {
-                    console.log("exit", xIndex, yIndex);
+                    //console.log("exit", xIndex, yIndex);
                     if (self.traceGeneration) {
                         self.ctxB.save();
                         self.ctxB.fillStyle = "green";
@@ -234,14 +234,14 @@ class Game {
                 }
             }
             for (let i = 0; i < 2; i++) {
-                console.log("run");
+                //console.log("run");
                 WallCells[xIndex][yIndex].hasBeenVisited = true;
                 // top
                 if (rand <= 0.25) {
                     if (yIndex > 0) {
                         if (WallCells[xIndex][yIndex - 1].hasBeenVisited === false) {
-                            console.log(WallCells[xIndex][yIndex]);
-                            console.log(WallCells[xIndex][yIndex - 1]);
+                            // console.log(WallCells[xIndex][yIndex]);
+                            // console.log(WallCells[xIndex][yIndex - 1]);
 
                             cellCounter++;
                             WallCells[xIndex][yIndex - 1].hasBottomWall = false;
@@ -266,8 +266,8 @@ class Game {
                 if (rand <= 0.5) {
                     if (xIndex > 0) {
                         if (WallCells[xIndex - 1][yIndex].hasBeenVisited === false) {
-                            console.log(WallCells[xIndex][yIndex]);
-                            console.log(WallCells[xIndex - 1][yIndex]);
+                            // console.log(WallCells[xIndex][yIndex]);
+                            // console.log(WallCells[xIndex - 1][yIndex]);
 
                             cellCounter++;
                             WallCells[xIndex - 1][yIndex].hasRightWall = false;
@@ -291,8 +291,8 @@ class Game {
                 if (rand <= 0.75) {
                     if (yIndex < maxYIndex) {
                         if (WallCells[xIndex][yIndex + 1].hasBeenVisited === false) {
-                            console.log(WallCells[xIndex][yIndex]);
-                            console.log(WallCells[xIndex][yIndex + 1]);
+                            // console.log(WallCells[xIndex][yIndex]);
+                            // console.log(WallCells[xIndex][yIndex + 1]);
 
                             cellCounter++;
                             WallCells[xIndex][yIndex + 1].hasTopWall = false;
@@ -317,8 +317,8 @@ class Game {
                 if (rand <= 1) {
                     if (xIndex < maxXIndex) {
                         if (WallCells[xIndex + 1][yIndex].hasBeenVisited === false) {
-                            console.log(WallCells[xIndex][yIndex]);
-                            console.log(WallCells[xIndex + 1][yIndex]);
+                            // console.log(WallCells[xIndex][yIndex]);
+                            // console.log(WallCells[xIndex + 1][yIndex]);
 
                             cellCounter++;
                             WallCells[xIndex + 1][yIndex].hasLeftWall = false;

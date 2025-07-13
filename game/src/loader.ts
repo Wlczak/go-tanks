@@ -67,7 +67,7 @@ function loadMultiplayerMenu() {
     });
     multiplayerJoinButton.addEventListener("click", () => {
         const roomId = roomIdInput.value;
-        console.log(roomId);
+        //console.log(roomId);
     });
 }
 
@@ -77,6 +77,7 @@ function login(username: string /*, password: string*/): boolean {
 }
 if (skipLogin) {
     loginMenu.style.display = "none";
+    gameMenu.style.display = "none";
     loadGame();
 } else {
     loginForm.addEventListener("submit", (event) => {

@@ -26,7 +26,7 @@ export class Client {
         });
         const fetchData = (await response.json()) as { roomId: string };
         const roomId = fetchData.roomId;
-        console.log(roomId);
+        //console.log(roomId);
         return roomId;
     }
 
