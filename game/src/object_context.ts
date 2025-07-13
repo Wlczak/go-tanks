@@ -13,9 +13,16 @@ export class ObjectContext {
 
     private objectIdCounter = 0;
 
-    constructor(borderX: number, borderY: number) {
+    private isMultiplayer = false;
+    private conn: WebSocket;
+
+    constructor(borderX: number, borderY: number, conn: WebSocket | null) {
         this.borderX = borderX;
         this.borderY = borderY;
+        if (conn != null) {
+            this.isMultiplayer = true;
+            this.conn = conn;
+        }
     }
 
     public registerPlayer(x: number, y: number, id: string, name: string, isPlayable: boolean) {

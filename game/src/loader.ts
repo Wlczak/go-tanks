@@ -16,12 +16,15 @@ const roomIdInput = document.getElementById("multiplayer-roomId-input") as HTMLI
 
 function loadGame() {
     import("./main.js").then(() => {
-        startGame();
+        startGame(null);
         gameScreen.style.display = "flex";
     });
 }
 function loadMuntiplayerGame(conn: WebSocket) {
-    conn.send("yoho");
+    import("./main.js").then(() => {
+        startGame(conn);
+        gameScreen.style.display = "flex";
+    });
 }
 
 function loadGameMenu() {
@@ -59,6 +62,7 @@ function loadMultiplayerMenu() {
             return;
         }
         Client.joinRoom(uid, roomId);
+        multiplayerMenu.style.display = "none";
         loadMuntiplayerGame(conn);
     });
     multiplayerJoinButton.addEventListener("click", () => {

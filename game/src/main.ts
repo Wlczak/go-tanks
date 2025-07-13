@@ -2,7 +2,7 @@ import { Controlls } from "./controlls.js";
 import { ObjectContext } from "./object_context.js";
 import { WallCell } from "./objects/wall_cell.js";
 
-export function startGame() {
+export function startGame(conn: WebSocket | null) {
     const canvasF = document.getElementById("foreground") as HTMLCanvasElement;
     const canvasB = document.getElementById("background") as HTMLCanvasElement;
 
@@ -12,7 +12,7 @@ export function startGame() {
         if (ctxF === null || ctxB === null) {
             console.log("Failed to get canvas context");
         } else {
-            new Game(ctxF as CanvasRenderingContext2D, ctxB as CanvasRenderingContext2D);
+            new Game(ctxF, ctxB, conn);
         }
     } else {
         document.body.innerHTML = "Error: failed to get canvas for game";
@@ -41,11 +41,11 @@ class Game {
     private Controlls: Controlls;
     private ObjectCTX: ObjectContext;
 
-    constructor(ctxF: CanvasRenderingContext2D, ctxB: CanvasRenderingContext2D) {
+    constructor(ctxF: CanvasRenderingContext2D, ctxB: CanvasRenderingContext2D, conn: WebSocket | null) {
         this.ctxF = ctxF;
         this.ctxB = ctxB;
 
-        this.ObjectCTX = new ObjectContext(ctxF.canvas.width, ctxF.canvas.height);
+        this.ObjectCTX = new ObjectContext(ctxF.canvas.width, ctxF.canvas.height, conn);
 
         console.log(ctxF.canvas.width, ctxF.canvas.height);
 
