@@ -13,7 +13,7 @@ export class ObjectContext {
 
     private objectIdCounter = 0;
 
-    private isMultiplayer = false;
+    public isMultiplayer = false;
     private conn: WebSocket;
 
     constructor(borderX: number, borderY: number, conn: WebSocket | null) {

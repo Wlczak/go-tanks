@@ -54,13 +54,29 @@ class Game {
         buffer.height = 600;
         this.buffer = buffer.getContext("2d") as CanvasRenderingContext2D;
 
-        this.ObjectCTX.registerPlayer(550, 550, "1", "Player 1", true);
-        this.ObjectCTX.registerPlayer(300, 300, "2", "Player 2", false);
-
         // this.ObjectCTX.registerWall(50, 50, 400, 50);
         // this.ObjectCTX.registerWall(50, 120, 400, 120);
 
         this.Controlls = new Controlls();
+
+        if (this.ObjectCTX.isMultiplayer) {
+            const username = sessionStorage.getItem("username");
+            const uid = sessionStorage.getItem("uid");
+            if (uid == null || username == null) {
+                window.location.reload();
+                return;
+            }
+            const xBlocks = this.ctxB.canvas.width / this.blockSize;
+            const yBlocks = this.ctxB.canvas.height / this.blockSize;
+
+            const playerX = Math.floor(Math.random() * xBlocks) * this.blockSize + 30; // +30 is for center offset
+            const playerY = Math.floor(Math.random() * yBlocks) * this.blockSize + 30;
+
+            this.ObjectCTX.registerPlayer(playerX, playerY, uid, username, true);
+        } else {
+            this.ObjectCTX.registerPlayer(550, 550, "1", "Player 1", true);
+            this.ObjectCTX.registerPlayer(300, 300, "2", "Player 2", false);
+        }
 
         this.generateWalls().then(() => {
             this.renderBackground();
