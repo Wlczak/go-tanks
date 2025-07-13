@@ -1,4 +1,4 @@
-# tanks
+# GoTanks
 
 A tech demo of a js - golang stack for building simple 2D multiplayer games.
 
