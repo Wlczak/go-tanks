@@ -13,6 +13,8 @@ const loginForm = document.getElementById("login-form") as HTMLFormElement;
 const multiplayerHostButton = document.getElementById("multiplayer-host-button") as HTMLButtonElement;
 const multiplayerJoinButton = document.getElementById("multiplayer-join-button") as HTMLButtonElement;
 const roomIdInput = document.getElementById("multiplayer-roomId-input") as HTMLInputElement;
+const roomIdDisplay = document.getElementById("roomId") as HTMLSpanElement;
+const roomIdBox = document.getElementById("roomIdBox") as HTMLDivElement;
 
 function loadGame() {
     import("./main.js").then(() => {
@@ -63,11 +65,15 @@ function loadMultiplayerMenu() {
         }
         Client.joinRoom(uid, roomId);
         multiplayerMenu.style.display = "none";
+
+        roomIdBox.style.display = "inline";
+        roomIdDisplay.textContent = roomId;
+
         loadMuntiplayerGame(conn);
     });
     multiplayerJoinButton.addEventListener("click", () => {
         const roomId = roomIdInput.value;
-        //console.log(roomId);
+        console.log(roomId);
     });
 }
 
@@ -80,6 +86,9 @@ if (skipLogin) {
     gameMenu.style.display = "none";
     loadGame();
 } else {
+    if (sessionStorage.getItem("username") != null) {
+        loadGameMenu();
+    }
     loginForm.addEventListener("submit", (event) => {
         event.preventDefault();
         const formData = new FormData(loginForm);
@@ -92,8 +101,4 @@ if (skipLogin) {
             loadGameMenu();
         }
     });
-}
-
-if (sessionStorage.getItem("username")) {
-    loadGameMenu();
 }

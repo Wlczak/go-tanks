@@ -69,7 +69,7 @@ class Game {
             const xBlocks = this.ctxB.canvas.width / this.blockSize;
             const yBlocks = this.ctxB.canvas.height / this.blockSize;
 
-            const playerX = Math.floor(Math.random() * xBlocks) * this.blockSize + 30; // +30 is for center offset
+            const playerX = Math.floor(Math.random() * xBlocks) * this.blockSize + 30; // + 30 is for center offset
             const playerY = Math.floor(Math.random() * yBlocks) * this.blockSize + 30;
 
             this.ObjectCTX.registerPlayer(playerX, playerY, uid, username, true);

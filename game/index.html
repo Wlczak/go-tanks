@@ -50,6 +50,12 @@
                     style="position: absolute; top: 0; left: 0; z-index: 1; border: 1px solid black; max-width: 100%; height: auto;"></canvas>
                 <canvas id="background" width="800" height="600" class="has-background-light"
                     style="position: absolute; top: 0; left: 0; z-index: 0; border: 1px solid black; max-width: 100%; height: auto;"></canvas>
+                <div id="roomIdBox" style="display: none;" class="box mt-4">roomId: <span
+                        onclick="navigator.clipboard.writeText(document.getElementById('roomId').textContent); const feedback = document.getElementById('copyFeedback');feedback.style.opacity = '1';setTimeout(() => {feedback.style.opacity = '0';}, 1000);"
+                        class="is-clickable" id="roomId"></span>
+                    <span id="copyFeedback"
+                        style="opacity: 0; transition: all 0.5s; margin-left: 10px; color: green; ">Copied!</span>
+                </div>
             </div>
         </div>
     </div>
