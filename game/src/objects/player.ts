@@ -157,4 +157,26 @@ export class Player implements Object {
 
         buffer.restore();
     }
+    public toObject(): object {
+        return {
+            id: this.id,
+            name: this.name,
+            color: this.color,
+            x: this.x,
+            y: this.y,
+            rotation: this.rotation,
+            collisionRadius: this.collisionRadius,
+        };
+    }
 }
+
+export type PlayerContent = {
+    contentType: "player";
+    content: {
+        x: number;
+        y: number;
+        id: string;
+        name: string;
+        isPlayable: boolean;
+    };
+};

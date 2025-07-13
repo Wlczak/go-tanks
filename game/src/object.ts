@@ -1,4 +1,6 @@
 import { ObjectContext } from "./object_context.js";
+import { PlayerContent } from "./objects/player.js";
+import { WallContent } from "./objects/wall.js";
 
 export interface Object {
     x: number;
@@ -11,3 +13,5 @@ export interface Object {
 
     ObjectCTX: ObjectContext;
 }
+
+export type ContentObject = PlayerContent | WallContent;

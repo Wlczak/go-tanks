@@ -1,9 +1,12 @@
-import { Object as GameObject } from "./object.js";
+import { Game } from "./main.js";
+import { ContentObject, Object as GameObject } from "./object.js";
 import { Bullet } from "./objects/bullet.js";
 import { Player } from "./objects/player.js";
 import { Wall } from "./objects/wall.js";
 
 export class ObjectContext {
+    private game: Game;
+
     public Players: Player[] = [];
     public Walls: Wall[] = [];
     public Bullets: Bullet[] = [];
@@ -14,10 +17,11 @@ export class ObjectContext {
     private objectIdCounter = 0;
 
     public isMultiplayer = false;
-    private conn?: WebSocket;
+    private conn: WebSocket;
     public isHost;
 
-    constructor(borderX: number, borderY: number, conn: WebSocket | null, isHost: boolean) {
+    constructor(game: Game, borderX: number, borderY: number, conn: WebSocket | null, isHost: boolean) {
+        this.game = game;
         this.borderX = borderX;
         this.borderY = borderY;
         this.isHost = isHost;
@@ -25,16 +29,65 @@ export class ObjectContext {
             this.isMultiplayer = true;
             this.conn = conn;
             this.connectMultiplayer();
+        } else {
+            this.conn = new WebSocket("");
+            this.conn.close();
         }
     }
 
     private connectMultiplayer() {
-        if (this.conn == null) {
+        if (this.conn == undefined) {
             return;
         }
         if (!this.isHost) {
             this.conn.send(JSON.stringify({ type: "download" }));
         }
+        this.conn.onmessage = (event) => {
+            const msg = JSON.parse(event.data) as { type: string; data: string };
+            if (msg.type == "download" && this.isHost) {
+                const data = this.extractData();
+                const dataJson = JSON.stringify({ type: "upload", data: data });
+                this.conn.send(dataJson);
+            }
+            if (msg.type == "upload") {
+                const data = JSON.parse(msg.data) as ContentObject[];
+                data.forEach((object) => {
+                    if (object.contentType == "player") {
+                        this.registerPlayer(
+                            object.content.x,
+                            object.content.y,
+                            object.content.id,
+                            object.content.name,
+                            object.content.isPlayable
+                        );
+                    } else if (object.contentType == "wall") {
+                        this.registerWall(
+                            object.content.startX,
+                            object.content.startY,
+                            object.content.endX,
+                            object.content.endY
+                        );
+                    }
+                });
+                this.game.renderBackground();
+            }
+        };
+    }
+
+    private extractData(): string {
+        const data = [] as object[];
+        this.Players.forEach((player) => {
+            const playerObject = { contentType: "player", content: player.toObject() };
+            //console.log(playerString);
+            data.push(playerObject);
+        });
+        this.Walls.forEach((wall) => {
+            const wallObject = { contentType: "wall", content: wall.toObject() };
+            //console.log(wallString);
+            data.push(wallObject);
+        });
+        //console.log(data);
+        return JSON.stringify(data);
     }
 
     public registerPlayer(x: number, y: number, id: string, name: string, isPlayable: boolean) {

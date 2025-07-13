@@ -23,7 +23,7 @@ export function startGame(conn: WebSocket | null, isHost = false) {
     }
 }
 
-class Game {
+export class Game {
     private ctxF: CanvasRenderingContext2D;
     private ctxB: CanvasRenderingContext2D;
     private buffer: CanvasRenderingContext2D;
@@ -50,7 +50,7 @@ class Game {
         this.ctxF = ctxF;
         this.ctxB = ctxB;
 
-        this.ObjectCTX = new ObjectContext(ctxF.canvas.width, ctxF.canvas.height, conn, isHost);
+        this.ObjectCTX = new ObjectContext(this, ctxF.canvas.width, ctxF.canvas.height, conn, isHost);
 
         console.log(ctxF.canvas.width, ctxF.canvas.height);
 
@@ -412,7 +412,7 @@ class Game {
         this.ctxF.drawImage(this.buffer.canvas, 0, 0);
     }
 
-    private renderBackground() {
+    public renderBackground() {
         //this.buffer.drawImage(this.ctxB.canvas, 0, 0);
         //this.buffer.reset();
 
