@@ -68,9 +68,11 @@ export class Player implements Object {
 
     public update() {
         if (this.isPlayable) {
+            let playerChanged = false;
             const speed = 4;
             const rotSpeed = 5.5;
             if (this.Controlls.up) {
+                playerChanged = true;
                 const intendedY = this.y - Math.cos((this.rotation / 180) * Math.PI) * speed;
                 const intendedX = this.x + Math.sin((this.rotation / 180) * Math.PI) * speed;
 
@@ -87,6 +89,8 @@ export class Player implements Object {
                 }
             }
             if (this.Controlls.down) {
+                playerChanged = true;
+
                 const intendedY = this.y + Math.cos((this.rotation / 180) * Math.PI) * speed;
                 const intendedX = this.x - Math.sin((this.rotation / 180) * Math.PI) * speed;
 
@@ -103,9 +107,13 @@ export class Player implements Object {
                 }
             }
             if (this.Controlls.left) {
+                playerChanged = true;
+
                 this.rotation -= rotSpeed;
             }
             if (this.Controlls.right) {
+                playerChanged = true;
+
                 this.rotation += rotSpeed;
             }
             if (
@@ -127,6 +135,9 @@ export class Player implements Object {
                     this.bulletSpeed,
                     this.bulletLifetime
                 );
+            }
+            if (this.ObjectCTX.isMultiplayer && playerChanged) {
+                this.ObjectCTX.sendPlayerUpdate(this);
             }
         }
     }
@@ -164,6 +175,7 @@ export class Player implements Object {
             color: this.color,
             x: this.x,
             y: this.y,
+            isPlayable: false,
             rotation: this.rotation,
             collisionRadius: this.collisionRadius,
         };
@@ -173,10 +185,13 @@ export class Player implements Object {
 export type PlayerContent = {
     contentType: "player";
     content: {
-        x: number;
-        y: number;
         id: string;
         name: string;
+        color: string;
+        x: number;
+        y: number;
         isPlayable: boolean;
+        rotation: number;
+        collisionRadius: number;
     };
 };
