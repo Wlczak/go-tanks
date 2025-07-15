@@ -19,6 +19,8 @@ export class ObjectContext {
     public isMultiplayer = false;
     private conn: WebSocket;
     public isHost;
+    private clientDataUploaded = false;
+    private hostDataReceived = false;
 
     constructor(game: Game, borderX: number, borderY: number, conn: WebSocket | null, isHost: boolean) {
         this.game = game;
@@ -44,12 +46,25 @@ export class ObjectContext {
         }
         this.conn.onmessage = (event) => {
             const msg = JSON.parse(event.data) as { type: string; data: string };
+
             if (msg.type == "download" && this.isHost) {
                 const data = this.extractData();
-                const dataJson = JSON.stringify({ type: "upload", data: data });
+
+                const dataJson = JSON.stringify({ type: "uploadHost", data: data });
+
                 this.conn.send(dataJson);
             }
-            if (msg.type == "upload") {
+
+            if (msg.type == "uploadHost" && !this.hostDataReceived) {
+                // upload client data before processing host data
+                const gameData = this.extractData();
+
+                if (!this.clientDataUploaded) {
+                    this.conn.send(JSON.stringify({ type: "uploadClient", data: gameData }));
+                }
+
+                this.clientDataUploaded = true;
+
                 const data = JSON.parse(msg.data) as ContentObject[];
                 data.forEach((object) => {
                     if (object.contentType == "player") {
@@ -69,7 +84,25 @@ export class ObjectContext {
                         );
                     }
                 });
+
+                this.hostDataReceived = true;
+
                 this.game.renderBackground();
+            }
+
+            if (msg.type == "uploadClient") {
+                const data = JSON.parse(msg.data) as ContentObject[];
+                data.forEach((object) => {
+                    if (object.contentType == "player") {
+                        this.registerPlayer(
+                            object.content.x,
+                            object.content.y,
+                            object.content.id,
+                            object.content.name,
+                            object.content.isPlayable
+                        );
+                    }
+                });
             }
         };
     }
@@ -81,11 +114,14 @@ export class ObjectContext {
             //console.log(playerString);
             data.push(playerObject);
         });
-        this.Walls.forEach((wall) => {
-            const wallObject = { contentType: "wall", content: wall.toObject() };
-            //console.log(wallString);
-            data.push(wallObject);
-        });
+
+        if (this.isHost) {
+            this.Walls.forEach((wall) => {
+                const wallObject = { contentType: "wall", content: wall.toObject() };
+                //console.log(wallString);
+                data.push(wallObject);
+            });
+        }
         //console.log(data);
         return JSON.stringify(data);
     }
