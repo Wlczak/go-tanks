@@ -3,8 +3,9 @@ services:
         image: wlczak/go-tanks:latest
         labels:
             - com.centurylinklabs.watchtower.enable=true
-        # volumes:
-        #     - ./:/app
+        volumes:
+            # - ./:/app
+            - ./logger/logs:/app/logger/logs
         working_dir: /app
         restart: always
         ports:
