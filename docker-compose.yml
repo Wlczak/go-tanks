@@ -1,6 +1,8 @@
 services:
     tanks-server:
         image: golang:1.24.5-alpine3.22
+        labels:
+            - com.centurylinklabs.watchtower.enable=true
         volumes:
             - ./:/app
         working_dir: /app
