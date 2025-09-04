@@ -9,7 +9,7 @@ services:
         restart: always
         ports:
             - "9460:8080"
-        command: go run .
+        command: ./tanks
 networks:
     tanks-net:
         name: tanks-net
