@@ -9,6 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v4
+
+      - name: Go build
+        run: go build .
     
       - uses: actions/setup-node@v5
 
