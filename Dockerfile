@@ -10,7 +10,7 @@ FROM alpine:latest
 
 WORKDIR /app
 
-COPY ./ /app
+COPY --from=builder /app/tanks .
 
 EXPOSE 8080
 
