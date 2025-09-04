@@ -10,3 +10,6 @@ services:
         ports:
             - "9460:8080"
         command: go run .
+networks:
+    tanks-net:
+        name: tanks-net
