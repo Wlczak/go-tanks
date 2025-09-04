@@ -10,6 +10,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
     
+      - uses: actions/setup-node@v5
+
+      - name: NPM install and build
+        run: cd game && npm install --no-save && npx tsc
+
       - uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
