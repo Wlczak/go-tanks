@@ -6,4 +6,4 @@ COPY ./ /app
 
 EXPOSE 8080
 
-CMD [ "./tanks" ]
+CMD [ "go", "run", "." ]

@@ -9,4 +9,4 @@ services:
         restart: always
         ports:
             - "9460:8080"
-        command: ./tanks
+        command: go run .
