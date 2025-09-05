@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY ./ /app
 
-RUN go build . && chmod +x ./tanks
+RUN go build -o tanks . && chmod +x ./tanks
 
 FROM alpine:latest
 
