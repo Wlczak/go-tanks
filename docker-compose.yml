@@ -11,6 +11,9 @@ services:
         ports:
             - "9460:8080"
         command: ./tanks
+        networks:
+            - tanks-net
+
 networks:
     tanks-net:
         name: tanks-net
