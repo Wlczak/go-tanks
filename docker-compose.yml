@@ -6,6 +6,7 @@ services:
         volumes:
             # - ./:/app # for local development
             - ./logger/logs:/app/logger/logs
+            - ./.env:/app/.env
         working_dir: /app
         restart: always
         ports:
