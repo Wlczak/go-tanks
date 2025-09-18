@@ -26,7 +26,7 @@ jobs:
               uses: golangci/golangci-lint-action@v8
               with:
                   version: latest
-                  install-mode: goinstall
+                  install-mode: binary
 
             - name: Fmt
               run: go fmt ./...
