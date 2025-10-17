@@ -1,6 +1,6 @@
 module github.com/Wlczak/tanks
 
-go 1.25.1
+go 1.25.3
 
 require (
 	github.com/gin-gonic/gin v1.10.1
