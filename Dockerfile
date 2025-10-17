@@ -1,4 +1,4 @@
-FROM golang:1.25.1-alpine AS gobuild
+FROM golang:1.25.3-alpine AS gobuild
 
 WORKDIR /build
 
