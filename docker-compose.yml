@@ -3,10 +3,18 @@ services:
         image: wlczak/go-tanks:latest
         labels:
             - com.centurylinklabs.watchtower.enable=true
-        # volumes:
-        #     - ./:/app
+        volumes:
+            # - ./:/app # for local development
+            - ./logger/logs:/app/logger/logs
+            - ./.env:/app/.env
         working_dir: /app
         restart: always
         ports:
             - "9460:8080"
-        command: go run .
+        command: ./tanks
+        networks:
+            - tanks-net
+
+networks:
+    tanks-net:
+        name: tanks-net

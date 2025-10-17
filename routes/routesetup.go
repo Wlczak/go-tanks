@@ -67,5 +67,7 @@ func SetupRouter(srv server.Server) *gin.Engine {
 
 	r.StaticFS("/game", http.Dir("game"))
 
+	r.GET("/sitemap.xml", genSiteMap)
+
 	return r
 }

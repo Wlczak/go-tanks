@@ -1,9 +1,27 @@
-FROM golang:1.25.1-alpine
+FROM golang:1.25.3-alpine AS gobuild
+
+WORKDIR /build
+
+COPY ./ /build/
+
+RUN go build -o tanks . && chmod +x ./tanks
+
+FROM node:latest AS tsbuilder
+
+WORKDIR /build
+
+COPY ./game/ /build/
+
+RUN npm install --no-save && npx tsc
+
+FROM alpine:latest
 
 WORKDIR /app
 
-COPY ./ /app
+COPY ./ ./
+COPY --from=gobuild /build/tanks ./
+COPY --from=tsbuilder /build/dist/ ./game/
 
 EXPOSE 8080
 
-CMD [ "go", "run", "." ]
+CMD [ "./tanks" ]
