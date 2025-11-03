@@ -1,0 +1,18 @@
+services:
+    tanks-server:
+        build: ../
+        volumes:
+            # - ./:/app # for local development
+            - ../logger/logs:/app/logger/logs
+            - ../.env:/app/.env
+        working_dir: /app
+        restart: always
+        ports:
+            - "9460:8080"
+        command: ./tanks
+        networks:
+            - tanks-net
+
+networks:
+    tanks-net:
+        name: tanks-net
