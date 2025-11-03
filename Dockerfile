@@ -20,7 +20,7 @@ WORKDIR /app
 
 COPY ./ ./
 COPY --from=gobuild /build/tanks ./
-COPY --from=tsbuilder /build/dist/ ./game/
+COPY --from=tsbuilder /build/dist/ ./game/dist/
 
 EXPOSE 8080
 
