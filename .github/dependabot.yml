@@ -5,22 +5,26 @@
 
 version: 2
 updates:
-  - package-ecosystem: "gomod" # See documentation for possible values
-    directory: "/" # Location of package manifests
-    schedule:
-      interval: "weekly"
-    cooldown:
-      default-days: 30
-      semver-major-days: 30
-      semver-minor-days: 14
-      semver-patch-days: 7
-      
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/game/" # Location of package manifests
-    schedule:
-      interval: "weekly"
-    cooldown:
-      default-days: 30
-      semver-major-days: 30
-      semver-minor-days: 14
-      semver-patch-days: 7
+    - package-ecosystem: "gomod" # See documentation for possible values
+      directory: "/" # Location of package manifests
+      schedule:
+          interval: "weekly"
+          day: "monday"
+          time: "08:00"
+      cooldown:
+          default-days: 30
+          semver-major-days: 30
+          semver-minor-days: 14
+          semver-patch-days: 14
+
+    - package-ecosystem: "npm" # See documentation for possible values
+      directory: "/game/" # Location of package manifests
+      schedule:
+          interval: "weekly"
+          day: "monday"
+          time: "08:00"
+      cooldown:
+          default-days: 30
+          semver-major-days: 30
+          semver-minor-days: 14
+          semver-patch-days: 14
