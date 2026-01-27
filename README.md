@@ -9,7 +9,7 @@ This project is heavily inspired by TankTrouble. It currently only supports sing
 ### Requirements
 
 - npm(v18.0+)/docker
-- golang (1.25.5+)/docker
+- golang (1.25.6+)/docker
 
 ### Instructions
 
