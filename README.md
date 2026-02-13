@@ -1,5 +1,7 @@
 # GoTanks
 
+![uptime](https://shokuin.vlastas.cc/api/badge/1/status)
+
 A tech demo of a js - golang stack for building simple 2D multiplayer games.
 
 This project is heavily inspired by TankTrouble. It currently only supports singleplayer mode but multiplayer is coming very soon.
