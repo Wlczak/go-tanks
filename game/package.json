@@ -13,7 +13,7 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^10.0.0",
     "globals": "^17.0.0",
-    "typescript": "^5.8.3",
+    "typescript": "^6.0.2",
     "typescript-eslint": "^8.32.1"
   },
   "type": "module"
