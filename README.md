@@ -11,7 +11,7 @@ This project is heavily inspired by TankTrouble. It currently only supports sing
 ### Requirements
 
 - npm(v18.0+)/docker
-- golang (1.26.4+)/docker
+- golang (1.26.5+)/docker
 
 ### Instructions
 
