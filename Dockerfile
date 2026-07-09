@@ -1,4 +1,4 @@
-FROM golang:1.25.3-alpine AS gobuild
+FROM golang:1.26.4-alpine AS gobuild
 
 WORKDIR /build
 
@@ -20,7 +20,7 @@ WORKDIR /app
 
 COPY ./ ./
 COPY --from=gobuild /build/tanks ./
-COPY --from=tsbuilder /build/dist/ ./game/
+COPY --from=tsbuilder /build/dist/ ./game/dist/
 
 EXPOSE 8080
 
