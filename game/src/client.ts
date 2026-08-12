@@ -1,6 +1,11 @@
 export class Client {
     public static async getLoggedInServerConnection(username: string): Promise<WebSocket | null> {
-        const conn = new WebSocket("ws://" + window.location.host + "/server");
+        let conn;
+        if (window.location.protocol === "https:") {
+            conn = new WebSocket("wss://" + window.location.host + "/server");
+        } else {
+            conn = new WebSocket("ws://" + window.location.host + "/server");
+        }
         return new Promise((resolve) => {
             conn.onmessage = async function (event) {
                 const msg = JSON.parse(event.data) as { uid: string; username: string };
