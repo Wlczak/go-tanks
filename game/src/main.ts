@@ -1,4 +1,3 @@
-import { Controlls } from "./controlls.js";
 import { ObjectContext } from "./object_context.js";
 import { WallCell } from "./objects/wall_cell.js";
 
@@ -38,7 +37,6 @@ export class Game {
     private readonly maxGenCycles = 25000;
     private readonly wallBreakPropability = 15 / 100; // values between 5% and 15% look nice
 
-    private Controlls: Controlls;
     private ObjectCTX: ObjectContext;
 
     constructor(
@@ -61,8 +59,6 @@ export class Game {
 
         // this.ObjectCTX.registerWall(50, 50, 400, 50);
         // this.ObjectCTX.registerWall(50, 120, 400, 120);
-
-        this.Controlls = new Controlls();
 
         if (this.ObjectCTX.isMultiplayer) {
             const username = sessionStorage.getItem("username");
