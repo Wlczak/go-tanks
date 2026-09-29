@@ -1,3 +1,4 @@
+import { msg_types } from "./api/msg_types.js";
 import { Game } from "./main.js";
 import { ContentObject, Object as GameObject } from "./object.js";
 import { Bullet } from "./objects/bullet.js";
@@ -55,7 +56,7 @@ export class ObjectContext {
                 this.conn.send(dataJson);
             }
 
-            if (msg.type == "uploadHost" && !this.hostDataReceived) {
+            if (msg.type === "uploadHost" && !this.hostDataReceived) {
                 // upload client data before processing host data
                 const gameData = this.extractData();
 
@@ -73,7 +74,8 @@ export class ObjectContext {
                             object.content.y,
                             object.content.id,
                             object.content.name,
-                            object.content.isPlayable
+                            object.content.isPlayable,
+                            object.content.rotation
                         );
                     } else if (object.contentType == "wall") {
                         this.registerWall(
@@ -99,10 +101,25 @@ export class ObjectContext {
                             object.content.y,
                             object.content.id,
                             object.content.name,
-                            object.content.isPlayable
+                            object.content.isPlayable,
+                            object.content.rotation
                         );
                     }
                 });
+            }
+
+            if (msg.type == msg_types.PlayerUpdate) {
+                const data = JSON.parse(msg.data) as ContentObject;
+                if (data.contentType == "player") {
+                    const player = this.Players.find((player) => player.id == data.content.id);
+                    if (player != undefined) {
+                        player.x = data.content.x;
+                        player.y = data.content.y;
+                        player.rotation = data.content.rotation;
+                    } else {
+                        console.error("Player update failed: Player not found");
+                    }
+                }
             }
         };
     }
@@ -126,8 +143,26 @@ export class ObjectContext {
         return JSON.stringify(data);
     }
 
-    public registerPlayer(x: number, y: number, id: string, name: string, isPlayable: boolean) {
-        const player = new Player(id, name, "red", x, y, 0, this, 25, this.objectIdCounter++);
+    public sendPlayerUpdate(player: Player) {
+        const playerString = JSON.stringify({
+            type: msg_types.PlayerUpdate,
+            data: JSON.stringify({ contentType: "player", content: player.toObject() }),
+        });
+        this.conn.send(playerString);
+    }
+
+    public registerPlayer(
+        x: number,
+        y: number,
+        id: string,
+        name: string,
+        isPlayable: boolean,
+        rotation?: number
+    ) {
+        if (rotation == undefined) {
+            rotation = 0;
+        }
+        const player = new Player(id, name, "red", x, y, rotation, this, 25, this.objectIdCounter++);
 
         player.isPlayable = isPlayable;
 
